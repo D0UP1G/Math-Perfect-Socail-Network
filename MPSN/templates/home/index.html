@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Главная | X.com</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        :root {
+            --bg-color: #000000;
+            --text-color: #ffffff;
+            --border-color: #2f3336;
+            --hover-color: #181818;
+            --primary-color: #1d9bf0;
+            --secondary-color: #71767b;
+            --container-color: #16181c;
+            --gold-color: #FFD700;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            height: 100vh;
+            overflow: hidden; /* Блокируем прокрутку */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            position: sticky;
+            top: 0;
+            background-color: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(12px);
+            z-index: 10;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            color: var(--text-color);
+        }
+
+        .profile-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .post-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        .post {
+            background-color: var(--container-color);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .post-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: #333;
+            margin-right: 12px;
+        }
+
+        .post-author {
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .post-username {
+            color: var(--secondary-color);
+            font-size: 14px;
+        }
+
+        .post-title {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .post-text {
+            margin-bottom: 20px;
+            line-height: 1.5;
+            color: var(--text-color);
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+        }
+
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--secondary-color);
+            cursor: pointer;
+            transition: color 0.2s;
+            padding: 8px 15px;
+            border-radius: 8px;
+        }
+
+        .action-btn:hover {
+            background-color: var(--hover-color);
+        }
+
+        .action-btn i {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .action-btn.like.active {
+            color: #f91880;
+        }
+
+        .action-btn.donate.active {
+            color: var(--gold-color);
+        }
+
+        .no-more-posts {
+            text-align: center;
+            color: var(--secondary-color);
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .donate-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .donate-content {
+            background-color: var(--container-color);
+            padding: 30px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .donate-amounts {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .amount-btn {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .amount-btn:hover {
+            border-color: var(--primary-color);
+        }
+
+        .amount-btn.active {
+            border-color: var(--gold-color);
+            background-color: rgba(255, 215, 0, 0.1);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: var(--secondary-color);
+            font-size: 24px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <i class="fab fa-x-twitter"></i>
+        </div>
+        <div class="profile-icon">
+            <i class="fas fa-user"></i>
+        </div>
+    </div>
+
+    <div class="post-container">
+        <div class="post">
+            <div class="post-header">
+                <div class="post-avatar"></div>
+                <div>
+                    <div class="post-author">Иван Петров</div>
+                    <div class="post-username">@ivan_petrov · 2 ч</div>
+                </div>
+            </div>
+            
+            <h3 class="post-title">Важность открытого исходного кода в современной разработке</h3>
+            
+            <div class="post-text">
+                Открытый исходный код стал фундаментом современной разработки программного обеспечения. Он позволяет разработчикам со всего мира сотрудничать, делиться знаниями и создавать более качественные продукты. Проекты с открытым кодом, такие как Linux, React и VS Code, демонстрируют силу коллективного разума. 
+
+                Использование open-source решений сокращает время разработки, повышает безопасность (благодаря публичному аудиту кода) и снижает затраты. Для начинающих разработчиков это бесценный ресурс для обучения. Компании же получают доступ к инновациям без необходимости разрабатывать всё с нуля.
+                
+                Однако важно помнить о лицензиях и вкладе в сообщество. Используя open-source, стоит по возможности участвовать в его развитии.
+            </div>
+            
+            <div class="post-actions">
+                <div class="action-btn skip">
+                    <i class="fas fa-forward"></i>
+                    <span>Пропустить</span>
+                </div>
+                <div class="action-btn like">
+                    <i class="far fa-heart"></i>
+                    <span>Лайк</span>
+                </div>
+                <div class="action-btn donate">
+                    <i class="fas fa-coins"></i>
+                    <span>Донат</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="no-more-posts">
+            Это единственный пост на странице. Прокрутка отключена.
+        </div>
+    </div>
+
+    <div class="donate-modal" id="donateModal">
+        <div class="donate-content">
+            <span class="close-modal">&times;</span>
+            <h3>Отправить баллы автору</h3>
+            <p>Выберите количество баллов для отправки @ivan_petrov</p>
+            
+            <div class="donate-amounts">
+                <button class="amount-btn" data-amount="10">10 баллов</button>
+                <button class="amount-btn" data-amount="50">50 баллов</button>
+                <button class="amount-btn" data-amount="100">100 баллов</button>
+                <button class="amount-btn" data-amount="200">200 баллов</button>
+                <button class="amount-btn" data-amount="500">500 баллов</button>
+                <button class="amount-btn" data-amount="1000">1000 баллов</button>
+            </div>
+            
+            <button class="btn btn-primary" id="confirmDonate">Подтвердить</button>
+        </div>
+    </div>
+
+    <script>
+        // Лайк поста
+        const likeBtn = document.querySelector('.action-btn.like');
+        likeBtn.addEventListener('click', function() {
+            this.classList.toggle('active');
+            const icon = this.querySelector('i');
+            if (this.classList.contains('active')) {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+            } else {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+            }
+        });
+
+        // Открытие модального окна доната
+        const donateBtn = document.querySelector('.action-btn.donate');
+        const donateModal = document.getElementById('donateModal');
+        const closeModal = document.querySelector('.close-modal');
+        
+        donateBtn.addEventListener('click', function() {
+            donateModal.style.display = 'flex';
+        });
+        
+        closeModal.addEventListener('click', function() {
+            donateModal.style.display = 'none';
+        });
+        
+        // Выбор суммы доната
+        const amountBtns = document.querySelectorAll('.amount-btn');
+        amountBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                amountBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        
+        // Подтверждение доната
+        document.getElementById('confirmDonate').addEventListener('click', function() {
+            const selectedAmount = document.querySelector('.amount-btn.active')?.dataset.amount;
+            if (selectedAmount) {
+                alert(`Вы отправили ${selectedAmount} баллов пользователю @ivan_petrov`);
+                donateModal.style.display = 'none';
+                donateBtn.classList.add('active');
+            } else {
+                alert('Пожалуйста, выберите сумму');
+            }
+        });
+        
+        // Пропуск поста
+        document.querySelector('.action-btn.skip').addEventListener('click', function() {
+            alert('Пост пропущен. Это был последний пост.');
+        });
+        
+        // Блокировка прокрутки страницы
+        document.addEventListener('scroll', function(e) {
+            window.scrollTo(0, 0);
+        });
+    </script>
+</body>
+</html>

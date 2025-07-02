@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Профиль | X.com</title>
+    <title>Профиль | doupig.ru</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         a{
@@ -583,18 +583,19 @@
             <i class="fas fa-trophy"></i>
             <span>Лидерборд</span>
         </div>
+        <a href="{% url 'user:profile' request.user.username %}">
         <div class="nav-item">
             <i class="fas fa-user"></i>
             <span>Профиль</span>
-        </div>
+        </div></a>
         <button class="tweet-btn">
             <span>Опубликовать</span>
         </button>
         <div class="profile-mini">
             <div class="avatar-placeholder"></div>
             <div class="info">
-                <div class="name">Иван Петров</div>
-                <div class="username">@ivan_petrov</div>
+                <div class="name">{{ user.first_name }} {{ user.last_name }}</div>
+                <div class="username">{{ user.username }}</div>
             </div>
             <i class="fas fa-ellipsis-h"></i>
         </div>
@@ -603,7 +604,7 @@
     <!-- Основной контент -->
     <div class="main-content">
         <div class="header">
-            <h1>Иван Петров</h1>
+            <h1>{{ user.first_name }}</h1>
         </div>
         
         <div class="profile-header">
@@ -612,14 +613,14 @@
             </div>
             <div class="profile-info">
                 <div class="user-details">
-                    <h2>Иван Петров</h2>
-                    <div class="username">@ivan_petrov</div>
+                    <h2>{{ user.first_name }} {{ user.last_name }}</h2>
+                    <div class="username">@{{ user.username }}</div>
                     <div class="bio">
-                        Frontend разработчик | Люблю создавать красивые и функциональные интерфейсы | JavaScript, React, Vue | Фотограф-любитель
+                        {{ user.descriptions }}
                     </div>
                     
                     <div class="user-stats">
-                        <div><span>8128</span> баллов </div>
+                        <div><span> {{ user.score }} </span> баллов </div>
                     </div>
                 </div>
             </div>
@@ -631,21 +632,22 @@
         
         <div class="posts">
             <!--  пример одного из постов   -->
+            {% for post in posts%}
             <a style="text-decoration: none;" href="">
                 <div class="post">
-                    <div class="post-avatar"></div>
                     <div class="post-content">
                         <div class="post-header">
-                            <div class="post-author"> Тема</div>
-                            <div class="post-username">@1031231</div>
-                            <div class="post-time">13.12.10</div>
+                            <div class="post-author"> {{ post.title }}</div>
+                            <div class="post-username">{{ post.created_by }}</div>
+                            <div class="post-time">{{ post.created }}</div>
                         </div>
                         <div class="post-text">
-                            Только что закончил работу над новым проектом! Использовал React, TypeScript и Tailwind CSS. Очень доволен результатом. Скоро поделюсь скриншотами.
+                            {{ post.description|truncatechars:150 }}
                         </div>
                     </div>
                 </div>
             </a>
+            {% endfor %}
             
         </div>
     </div>
