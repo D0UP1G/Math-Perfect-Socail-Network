@@ -86,4 +86,13 @@ class LoginForm(forms.Form):
              'placeholder': 'Введите пароль'
          })
      )
-
+    error_messages = {
+            'username': {
+                'max_length': "Заголовок не должен превышать 128 символов",
+                'required': "Пожалуйста, укажите username"
+            },
+            'password': {
+                'max_length': "Текст поста не должен превышать 8128 символов",
+                'required': "Пожалуйста, введите пароль"
+            }
+    }

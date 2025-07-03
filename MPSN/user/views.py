@@ -7,6 +7,8 @@ from django.contrib.auth import login, authenticate, logout
 from .form import *
 from .models import CustomUser
 from posts.models import PostModel
+
+
 def login_view(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
