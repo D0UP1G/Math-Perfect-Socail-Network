@@ -5,5 +5,6 @@ from .views import *
 app_name = 'misc'
 
 urlpatterns = [
-    path('leaderboard/', leaderboard_view, name='register'),
+    path('leaderboard/', leaderboard_view, name='leaderboard'),
+    path('', home_view, name='home'),
 ]

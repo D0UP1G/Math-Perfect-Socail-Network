@@ -398,7 +398,7 @@
     <div class="post-editor">
         <div class="author-info">
             <div class="author-avatar"></div>
-            <div class="author-name">{{ request.user.first_name }} {{ request.user.last_name }}</div>
+            <div class="author-name">{{ request.user.first_name }} {{ request.user.last_name }} | @{{ request.user.username }}</div>
         </div>
 
         <form id="post-form" method="post">
@@ -415,7 +415,7 @@
             
             <div class="editor-area active" id="editor-area">
                {{ form.description }}
-                <div class="char-counter"><span id="char-count">0</span>/2000</div>
+                <div class="char-counter"><span id="char-count">0</span>/5000</div>
                 
                 <div class="formatting-tools">
                     <button type="button" class="format-btn" data-insert="**текст**" title="Жирный текст"><i class="fas fa-bold"></i></button>
@@ -564,14 +564,14 @@
             const count = markdownEditor.value.length;
             charCount.textContent = count;
             
-            if (count > 2000) {
+            if (count > 5000) {
                 charCount.style.color = '#ff4d4d';
             } else {
                 charCount.style.color = 'var(--secondary-color)';
             }
             
             // Активировать кнопку публикации только если есть заголовок и текст
-            publishBtn.disabled = !(postTitle.value.trim() && markdownEditor.value.trim() && count <= 2000);
+            publishBtn.disabled = !(postTitle.value.trim() && markdownEditor.value.trim() && count <= 8218);
         }
 
         markdownEditor.addEventListener('input', () => {
@@ -636,10 +636,10 @@
         // Обработка отправки формы
         postForm.addEventListener('submit', function(e) {
             // Проверка длины контента
-            if (markdownEditor.value.length > 2000) {
-                alert('Текст поста не должен превышать 2000 символов');
-                return;
-            }
+            // if (markdownEditor.value.length > 5000) {
+            //     alert('Текст поста не должен превышать 5000 символов');
+            //     return;
+            // }
             
             // Здесь можно добавить AJAX-отправку или просто показать сообщение 
             // В реальном приложении здесь будет отправка формы

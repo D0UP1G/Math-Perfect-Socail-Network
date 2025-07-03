@@ -1,6 +1,11 @@
 from django.shortcuts import render, redirect
-from .forms import PostForm
+from django.views.decorators.http import require_GET
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+
+from .forms import PostForm
+from .models import PostModel
 
 @login_required
 def create_post_view(request):
@@ -15,9 +20,6 @@ def create_post_view(request):
         form = PostForm(user=request.user)
     
     return render(request, 'posts/create.html', {'form': form, 'request': request})
-
-from django.shortcuts import get_object_or_404
-from .models import PostModel
 
 
 @login_required
@@ -46,3 +48,23 @@ def post_edit_view(request, pk=None):
             'post':post
         }
         return render(request, 'posts/index.html', context )
+
+@require_GET
+@login_required
+def handle_like(request, pk, action):
+    post = get_object_or_404(PostModel, id=pk)
+    
+    if action == '1':  # Лайк
+        if request.user not in post.likes.all():
+            post.likes.add(request.user)
+    elif action == '2':  # Анлайк
+        if request.user in post.likes.all():
+            post.likes.remove(request.user)
+    else:
+        return JsonResponse({'success': False, 'error': 'Invalid action'}, status=400)
+    
+    return JsonResponse({
+        'success': True,
+        'likes_count': post.likes.count(),
+        'is_liked': request.user in post.likes.all()
+    })

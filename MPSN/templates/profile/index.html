@@ -571,26 +571,31 @@
         <div class="logo">
             <i class="fab fa-x-twitter"></i>
         </div>
-        <div class="nav-item active">
-            <i class="fas fa-home"></i>
-            <span>Главная</span>
-        </div>
-        <div class="nav-item">
-            <i class="fas fa-bookmark"></i>
-            <span>Закладки</span>
-        </div>
-        <div class="nav-item active">
-            <i class="fas fa-trophy"></i>
-            <span>Лидерборд</span>
-        </div>
+        <a href="{% url 'misc:home' %}">
+            <div class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Главная</span>
+            </div>
+        </a>
+        <a href="{% url 'misc:leaderboard' %}">
+            <div class="nav-item">
+                <i class="fas fa-trophy"></i>
+                <span>Лидерборд</span>
+            </div>
+        </a>
         <a href="{% url 'user:profile' request.user.username %}">
-        <div class="nav-item">
-            <i class="fas fa-user"></i>
-            <span>Профиль</span>
-        </div></a>
+            <div class="nav-item">
+                <i class="fas fa-user"></i>
+                <span>Профиль</span>
+            </div>
+        </a>
+        
         <button class="tweet-btn">
-            <span>Опубликовать</span>
+            <a href="{% url 'posts:create' %}">
+                <span>Опубликовать</span>
+            </a>
         </button>
+        
         <div class="profile-mini">
             <div class="avatar-placeholder"></div>
             <div class="info">
@@ -642,8 +647,16 @@
                             <div class="post-time">{{ post.created }}</div>
                         </div>
                         <div class="post-text">
-                            {{ post.description|truncatechars:150 }}
+                            {{ post.description|truncatechars:50 }}
                         </div>
+                        <div class="post-stats">
+
+                        <div class="post-stat">
+                            <i class="far fa-heart"></i>
+                            <span>{{ post.likes.count }}</span>
+                        </div>
+
+                    </div>
                     </div>
                 </div>
             </a>

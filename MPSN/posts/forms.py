@@ -49,7 +49,6 @@ class PostForm(forms.ModelForm):
         instance = super().save(commit=False)
         instance.created_by = self.user  # Устанавливаем автора
         instance.views = 0  # Инициализируем просмотры
-        instance.likes = 0  # Инициализируем лайки
         
         if commit:
             instance.save()

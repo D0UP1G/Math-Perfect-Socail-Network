@@ -12,6 +12,10 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
+        a{
+            text-decoration: 0;
+            color:#fff;
+        }
 
         :root {
             --bg-color: #000000;
@@ -512,30 +516,34 @@
         <div class="logo">
             <i class="fab fa-x-twitter"></i>
         </div>
-        <div class="nav-item">
-            <i class="fas fa-home"></i>
-            <span>Главная</span>
-        </div>
-        <div class="nav-item">
-            <i class="fas fa-bookmark"></i>
-            <span>Закладки</span>
-        </div>
-        <div class="nav-item">
-            <i class="fas fa-trophy"></i>
-            <span>Лидерборд</span>
-        </div>
-        <div class="nav-item">
-            <i class="fas fa-user"></i>
-            <span>Профиль</span>
-        </div>
+        <a href="{% url 'misc:home' %}">
+            <div class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Главная</span>
+            </div>
+        </a>
+        <a href="{% url 'misc:leaderboard' %}">
+            <div class="nav-item">
+                <i class="fas fa-trophy"></i>
+                <span>Лидерборд</span>
+            </div>
+        </a>
+        <a href="{% url 'user:profile' request.user.username %}">
+            <div class="nav-item">
+                <i class="fas fa-user"></i>
+                <span>Профиль</span>
+            </div>
+        </a>
         <button class="tweet-btn">
-            <span>Опубликовать</span>
+            <a href="{% url 'posts:create' %}">
+                <span>Опубликовать</span>
+            </a>
         </button>
         <div class="profile-mini">
             <div class="avatar-placeholder"></div>
             <div class="info">
-                <div class="name">Иван Петров</div>
-                <div class="username">@ivan_petrov</div>
+                <div class="name">{{ request.user.first_name }} {{ request.user.last_name }}</div>
+                <div class="username">@{{ request.user.username }}</div>
             </div>
             <i class="fas fa-ellipsis-h"></i>
         </div>
@@ -682,76 +690,6 @@
                 <div class="leaderboard-points">6890</div>
             </div>
              -->
-        </div>
-    </div>
-    
-    <div class="right-sidebar">        
-        <div class="trends-container">
-            <div class="section-title">Топ категории</div>
-            <div class="trend-item">
-                <div class="trend-category">Игры · Тренды</div>
-                <div class="trend-name">Киберспорт</div>
-                <div class="trend-count">15.4K игроков</div>
-            </div>
-            <div class="trend-item">
-                <div class="trend-category">Программирование</div>
-                <div class="trend-name">Алгоритмы</div>
-                <div class="trend-count">8.2K игроков</div>
-            </div>
-            <div class="trend-item">
-                <div class="trend-category">Образование</div>
-                <div class="trend-name">Онлайн-курсы</div>
-                <div class="trend-count">12.7K игроков</div>
-            </div>
-            <div class="trend-item">
-                <div class="trend-category">Новое</div>
-                <div class="trend-name">Квесты VR</div>
-                <div class="trend-count">5.3K игроков</div>
-            </div>
-            <div class="show-more">Показать ещё</div>
-        </div>
-        
-        <div class="who-to-follow">
-            <div class="section-title">Ваши друзья</div>
-            <div class="user-to-follow">
-                <div class="avatar-placeholder"></div>
-                <div class="user-info-right">
-                    <div class="name">Иван Петров</div>
-                    <div class="username">@ivan_petrov</div>
-                    <div class="position">#7 в рейтинге</div>
-                </div>
-                <button class="follow-btn">Профиль</button>
-            </div>
-            <div class="user-to-follow">
-                <div class="avatar-placeholder"></div>
-                <div class="user-info-right">
-                    <div class="name">Анна Васильева</div>
-                    <div class="username">@anna_v</div>
-                    <div class="position">#8 в рейтинге</div>
-                </div>
-                <button class="follow-btn">Профиль</button>
-            </div>
-            <div class="user-to-follow">
-                <div class="avatar-placeholder"></div>
-                <div class="user-info-right">
-                    <div class="name">Ольга Кузнецова</div>
-                    <div class="username">@olga_k</div>
-                    <div class="position">#6 в рейтинге</div>
-                </div>
-                <button class="follow-btn">Профиль</button>
-            </div>
-            <div class="show-more">Показать ещё</div>
-        </div>
-        
-        <div class="footer">
-            <div class="footer-links">
-                <div class="footer-link">Условия участия</div>
-                <div class="footer-link">Правила рейтинга</div>
-                <div class="footer-link">Награды</div>
-                <div class="footer-link">FAQ</div>
-                <div class="footer-link">Контакты</div>
-            </div>
-            <div>© 2024 X Corp. Leaderboard</div>
         </div>
     </div>
 

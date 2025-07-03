@@ -42,5 +42,7 @@ def logout_view(request):
 @login_required()
 def profile_view(request, username):
     user = CustomUser.objects.filter(username=username)[0]
-    posts = PostModel.objects.filter(created_by=user)
+    posts = PostModel.objects.filter(created_by=user).order_by('-id')
+    if len(posts) > 5:
+        posts = posts[0:4]
     return render(request, 'profile/index.html', {'user':user, 'request': request, 'posts': posts})

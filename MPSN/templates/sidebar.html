@@ -1,0 +1,78 @@
+<div class="sidebar">
+    <div class="logo">
+        <i class="fab fa-x-twitter"></i>
+    </div>
+    <div class="nav-item {% if active_tab == 'home' %}active{% endif %}">
+        <i class="fas fa-home"></i>
+        <span>Главная</span>
+    </div>
+    <div class="nav-item {% if active_tab == 'bookmarks' %}active{% endif %}">
+        <i class="fas fa-bookmark"></i>
+        <span>Закладки</span>
+    </div>
+    <div class="nav-item {% if active_tab == 'leaderboard' %}active{% endif %}">
+        <i class="fas fa-trophy"></i>
+        <span>Лидерборд</span>
+    </div>
+    <a href="{% url 'user:profile' request.user.username %}">
+        <div class="nav-item {% if active_tab == 'profile' %}active{% endif %}">
+            <i class="fas fa-user"></i>
+            <span>Профиль</span>
+        </div>
+    </a>
+    <button class="tweet-btn">
+        <span>Опубликовать</span>
+    </button>
+    <div class="profile-mini">
+        <div class="avatar-placeholder"></div>
+        <div class="info">
+            <div class="name">{{ user.first_name }} {{ user.last_name }}</div>
+            <div class="username">{{ user.username }}</div>
+        </div>
+        <i class="fas fa-ellipsis-h"></i>
+    </div>
+</div>
+
+<style>
+    /* Стили сайдбара */
+    .sidebar {
+        width: 275px;
+        padding: 8px 12px;
+        position: fixed;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        border-right: 1px solid var(--border-color);
+    }
+    
+    .logo {
+        padding: 12px;
+        margin-bottom: 8px;
+    }
+    
+    .nav-item {
+        display: flex;
+        align-items: center;
+        padding: 12px;
+        margin: 4px 0;
+        border-radius: 50px;
+        cursor: pointer;
+        font-size: 20px;
+        font-weight: 500;
+        transition: background-color 0.2s;
+    }
+    
+    .nav-item.active {
+        font-weight: 700;
+    }
+    
+    /* Остальные стили сайдбара... */
+    
+    @media (max-width: 1280px) {
+        .sidebar {
+            width: 88px;
+            align-items: center;
+        }
+        /* Адаптивные стили... */
+    }
+</style>

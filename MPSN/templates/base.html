@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Doupig.ru{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Базовые стили */
+        a {
+            text-decoration: none;
+            color: #fff;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        :root {
+            --bg-color: #000000;
+            --text-color: #ffffff;
+            --border-color: #2f3336;
+            --hover-color: #181818;
+            --primary-color: #1d9bf0;
+            --secondary-color: #71767b;
+            --container-color: #16181c;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Блок для дополнительных стилей */
+        {% block extra_css %}{% endblock %}
+    </style>
+</head>
+<body>
+    <!-- Левый сайдбар -->
+    {% include 'sidebar.html' %}
+
+    <!-- Основной контент -->
+    <div class="main-content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <script>
+        // Базовые скрипты
+        document.querySelectorAll('.follow-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (this.textContent === 'Читать') {
+                    this.textContent = 'Отменить';
+                    this.style.backgroundColor = 'transparent';
+                    this.style.color = 'var(--primary-color)';
+                    this.style.border = '1px solid var(--border-color)';
+                } else {
+                    this.textContent = 'Читать';
+                    this.style.backgroundColor = '';
+                    this.style.color = '';
+                    this.style.border = '';
+                }
+            });
+        });
+        
+        {% block extra_js %}{% endblock %}
+    </script>
+</body>
+</html>
