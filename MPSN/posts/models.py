@@ -7,8 +7,7 @@ class PostModel(models.Model):
     views = models.PositiveIntegerField()
     likes = models.PositiveIntegerField()
     created = models.DateField(auto_now_add=True)
-    created_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    
+    created_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE)    
 
     def __str__(self):
-        return self.title   
+        return f"{self.pk}"   

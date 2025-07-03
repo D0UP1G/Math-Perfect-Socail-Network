@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ post.title }} | X.com</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        :root {
+            --bg-color: #000000;
+            --text-color: #ffffff;
+            --border-color: #2f3336;
+            --hover-color: #181818;
+            --primary-color: #1d9bf0;
+            --secondary-color: #71767b;
+            --container-color: #16181c;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .header {
+            position: sticky;
+            top: 0;
+            background-color: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(12px);
+            z-index: 10;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .close-btn {
+            color: var(--text-color);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .post-container {
+            padding: 16px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .author-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .author-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: #333;
+            margin-right: 12px;
+            background-image: url('{{ post.created_by.profile.avatar.url }}');
+            background-size: cover;
+        }
+
+        .author-name {
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .author-username {
+            color: var(--secondary-color);
+            font-size: 14px;
+        }
+
+        .post-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            line-height: 1.3;
+        }
+
+        .post-content {
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .post-meta {
+            display: flex;
+            color: var(--secondary-color);
+            font-size: 14px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 16px;
+        }
+
+        .post-meta-item {
+            margin-right: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .post-meta-item i {
+            margin-right: 6px;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-around;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 16px;
+            margin-bottom: 16px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--secondary-color);
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 20px;
+            transition: all 0.2s;
+        }
+
+        .action-btn i {
+            margin-right: 8px;
+        }
+
+        .action-btn:hover {
+            background-color: rgba(29, 155, 240, 0.1);
+            color: var(--primary-color);
+        }
+
+        .like-btn.liked {
+            color: #f91880;
+        }
+
+        /* Стили для Markdown контента */
+        .post-content h1,
+        .post-content h2,
+        .post-content h3 {
+            margin: 20px 0 15px;
+            font-weight: 700;
+        }
+
+        .post-content h1 {
+            font-size: 1.5em;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+        }
+
+        .post-content h2 {
+            font-size: 1.3em;
+        }
+
+        .post-content h3 {
+            font-size: 1.1em;
+        }
+
+        .post-content p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .post-content a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .post-content a:hover {
+            text-decoration: underline;
+        }
+
+        .post-content strong {
+            font-weight: 700;
+        }
+
+        .post-content em {
+            font-style: italic;
+        }
+
+        .post-content blockquote {
+            border-left: 4px solid var(--primary-color);
+            padding: 0 15px;
+            margin: 15px 0;
+            color: var(--secondary-color);
+        }
+
+        .post-content pre {
+            background-color: var(--container-color);
+            padding: 12px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+
+        .post-content code {
+            font-family: monospace;
+            background-color: var(--container-color);
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+
+        .post-content ul,
+        .post-content ol {
+            padding-left: 25px;
+            margin: 15px 0;
+        }
+
+        .post-content li {
+            margin-bottom: 8px;
+        }
+
+        .post-content img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .post-content hr {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 20px 0;
+        }
+
+        .comments-section {
+            margin-top: 30px;
+        }
+
+        .comments-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 500px) {
+            .post-title {
+                font-size: 20px;
+            }
+            
+            .post-content {
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="close-btn">
+            <a style="color: #fff;" href="">
+            <i class="fas fa-arrow-left"></i>
+            </a>
+        </div>
+        <div class="header-title">Пост</div>
+        <div></div> <!-- Пустой элемент для выравнивания -->
+    </div>
+
+    <div class="post-container">
+        <div class="author-info">
+            <div class="author-avatar"></div>
+            <div>
+                <div class="author-name">{{ post.created_by.get_full_name }}</div>
+                <div class="author-username">@{{ post.created_by.username }}</div>
+            </div>
+        </div>
+
+        <h1 class="post-title">{{ post.title }}</h1>
+        
+        <div class="post-content" id="post-content">
+            <!-- Markdown контент будет вставлен сюда через JavaScript -->
+        </div>
+        
+        <div class="post-meta">
+            <div class="post-meta-item">
+                <i class="far fa-clock"></i>
+                <span>{{ post.created|date:"d M Y" }}</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Рендеринг Markdown контента
+            const postContent = document.getElementById('post-content');
+            postContent.innerHTML = marked.parse(`{{ post.description|escapejs }}`);
+            
+            // Обработка лайков
+            const likeBtn = document.querySelector('.like-btn');
+            likeBtn.addEventListener('click', function() {
+                const postId = this.getAttribute('data-post-id');
+                const likeCount = this.querySelector('span');
+                const isLiked = this.classList.contains('liked');
+                
+                fetch(`/posts/${postId}/like/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        action: isLiked ? 'unlike' : 'like'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        this.classList.toggle('liked');
+                        likeCount.textContent = data.likes;
+                        this.querySelector('i').className = isLiked ? 'far fa-heart' : 'fas fa-heart';
+                    }
+                });
+            });
+            
+            // Закрытие поста (возврат назад)
+            document.querySelector('.close-btn').addEventListener('click', function() {
+                window.history.back();
+            });
+            
+            // Подсветка кода (если нужно)
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+    </script>
+</body>
+</html>

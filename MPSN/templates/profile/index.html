@@ -633,7 +633,7 @@
         <div class="posts">
             <!--  пример одного из постов   -->
             {% for post in posts%}
-            <a style="text-decoration: none;" href="">
+            <a style="text-decoration: none;" href="{% url 'posts:edit' post.pk %}">
                 <div class="post">
                     <div class="post-content">
                         <div class="post-header">
@@ -649,46 +649,6 @@
             </a>
             {% endfor %}
             
-        </div>
-    </div>
-    
-    <!-- Правый сайдбар -->
-    <div class="right-sidebar">        
-        <div class="trends-container">
-            <div class="section-title">Последние посты</div>
-            <a href="">
-            <div class="trend-item">
-                <div class="trend-category">Технологии · Тренды</div>
-                <div class="trend-name">WebAssembly</div>
-                <div class="trend-count">15.4K постов</div>
-            </div></a>
-        </div>
-        
-        <div class="who-to-follow">
-            <div class="section-title">Лидерборд</div>
-            <!-- пример одного из пользовательских рейтингов  -->
-            <div class="user-to-follow">
-                <div class="avatar-placeholder"></div>
-                <div class="user-info">
-                    <div class="name">DOUPIG</div>
-                    <div class="username">@doupig</div>
-                </div>
-                <button class="follow-btn">Посмотреть</button>
-            </div>
-
-        </div>
-        
-        <div class="footer">
-            <div class="footer-links">
-                <div class="footer-link">Условия предоставления услуг</div>
-                <div class="footer-link">Политика конфиденциальности</div>
-                <div class="footer-link">Политика в отношении файлов cookie</div>
-                <div class="footer-link">Информация о рекламе</div>
-                <div class="footer-link">Доступность</div>
-                <div class="footer-link">Каталог</div>
-                <div class="footer-link">Настройки</div>
-            </div>
-            <div>© 2024 DOUPIG.ru</div>
         </div>
     </div>
 

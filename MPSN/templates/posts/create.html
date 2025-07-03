@@ -389,7 +389,7 @@
 <body>
     <div class="header">
         <div class="close-btn">
-            <i class="fas fa-times"></i>
+            <a style="color:white" href="{% url 'user:profile' request.user.username %}"><i class="fas fa-times"></i></a>
         </div>
         <div class="header-title">Новый пост</div>
         <div></div> <!-- Пустой элемент для выравнивания -->
@@ -398,7 +398,7 @@
     <div class="post-editor">
         <div class="author-info">
             <div class="author-avatar"></div>
-            <div class="author-name">Иван Петров</div>
+            <div class="author-name">{{ request.user.first_name }} {{ request.user.last_name }}</div>
         </div>
 
         <form id="post-form" method="post">
