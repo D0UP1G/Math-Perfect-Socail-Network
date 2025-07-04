@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Создать пост | X.com</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        :root {
+            --bg-color: #000000;
+            --text-color: #ffffff;
+            --border-color: #2f3336;
+            --hover-color: #181818;
+            --primary-color: #1d9bf0;
+            --secondary-color: #71767b;
+            --container-color: #16181c;
+            --editor-bg: #1c1f24;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            position: sticky;
+            top: 0;
+            background-color: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(12px);
+            z-index: 10;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .close-btn {
+            color: var(--text-color);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .post-editor {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 16px;
+        }
+
+        .author-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .author-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: #333;
+            margin-right: 12px;
+        }
+
+        .author-name {
+            font-weight: 700;
+        }
+
+        #post-form {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .editor-tabs {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .editor-tab {
+            padding: 8px 16px;
+            cursor: pointer;
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+
+        .editor-tab.active {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        .editor-area {
+            display: none;
+            flex: 1;
+        }
+
+        .editor-area.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-control {
+            width: 100%;
+            background-color: var(--container-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-color);
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        #post-title {
+            padding: 12px 16px;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        #post-title:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        #markdown-editor {
+            flex: 1;
+            padding: 16px;
+            resize: none;
+            line-height: 1.5;
+            min-height: 200px;
+        }
+
+        #markdown-editor:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        #markdown-preview {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .char-counter {
+            text-align: right;
+            color: var(--secondary-color);
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .editor-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .formatting-tools {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .format-btn {
+            background-color: var(--container-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .format-btn:hover {
+            background-color: var(--hover-color);
+        }
+
+        .post-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 20px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .post-btn:disabled {
+            background-color: var(--border-color);
+            cursor: not-allowed;
+        }
+
+        /* Стили для Markdown предпросмотра */
+        #markdown-preview h1,
+        #markdown-preview h2,
+        #markdown-preview h3 {
+            margin: 15px 0 10px;
+            font-weight: 700;
+        }
+
+        #markdown-preview h1 {
+            font-size: 1.5em;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+        }
+
+        #markdown-preview h2 {
+            font-size: 1.3em;
+        }
+
+        #markdown-preview h3 {
+            font-size: 1.1em;
+        }
+
+        #markdown-preview p {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        #markdown-preview a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        #markdown-preview a:hover {
+            text-decoration: underline;
+        }
+
+        #markdown-preview strong {
+            font-weight: 700;
+        }
+
+        #markdown-preview em {
+            font-style: italic;
+        }
+
+        #markdown-preview blockquote {
+            border-left: 4px solid var(--primary-color);
+            padding: 0 15px;
+            margin: 15px 0;
+            color: var(--secondary-color);
+        }
+
+        #markdown-preview pre {
+            background-color: var(--bg-color);
+            padding: 12px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+
+        #markdown-preview code {
+            font-family: monospace;
+            background-color: var(--bg-color);
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+
+        #markdown-preview ul,
+        #markdown-preview ol {
+            padding-left: 25px;
+            margin: 10px 0;
+        }
+
+        #markdown-preview li {
+            margin-bottom: 5px;
+        }
+
+        #markdown-preview img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        #markdown-preview hr {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 20px 0;
+        }
+
+        /* Модальное окно справки */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--container-color);
+            padding: 30px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            color: var(--secondary-color);
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        .markdown-help table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+
+        .markdown-help th,
+        .markdown-help td {
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            text-align: left;
+        }
+
+        .markdown-help th {
+            background-color: var(--hover-color);
+        }
+
+        .markdown-help code {
+            font-family: monospace;
+            background-color: var(--bg-color);
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        /* Дополнительные опции */
+        .form-checkbox {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .form-checkbox input {
+            margin-right: 8px;
+            accent-color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="close-btn">
+            <a style="color:white" href="{% url 'user:profile' request.user.username %}"><i class="fas fa-times"></i></a>
+        </div>
+        <div class="header-title">Новый пост</div>
+        <div></div> <!-- Пустой элемент для выравнивания -->
+    </div>
+
+    <div class="post-editor">
+        <div class="author-info">
+            <div class="author-avatar"></div>
+            <div class="author-name">{{ request.user.first_name }} {{ request.user.last_name }} | @{{ request.user.username }}</div>
+        </div>
+
+        <form id="post-form" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="post-title" class="form-label">Заголовок поста</label>
+                {{ form.title }}
+            </div>
+
+            <div class="editor-tabs">
+                <div class="editor-tab active" data-tab="editor">Редактор</div>
+                <div class="editor-tab" data-tab="preview">Предпросмотр</div>
+            </div>
+            
+            <div class="editor-area active" id="editor-area">
+               {{ form.description }}
+                <div class="char-counter"><span id="char-count">0</span>/5000</div>
+                
+                <div class="formatting-tools">
+                    <button type="button" class="format-btn" data-insert="**текст**" title="Жирный текст"><i class="fas fa-bold"></i></button>
+                    <button type="button" class="format-btn" data-insert="_текст_" title="Курсив"><i class="fas fa-italic"></i></button>
+                    <button type="button" class="format-btn" data-insert="# " title="Заголовок 1"><i class="fas fa-heading"></i><sub>1</sub></button>
+                    <button type="button" class="format-btn" data-insert="## " title="Заголовок 2"><i class="fas fa-heading"></i><sub>2</sub></button>
+                    <button type="button" class="format-btn" data-insert="[текст](ссылка)" title="Ссылка"><i class="fas fa-link"></i></button>
+                    <button type="button" class="format-btn" data-insert="![alt](url)" title="Изображение"><i class="fas fa-image"></i></button>
+                    <button type="button" class="format-btn" data-insert="> " title="Цитата"><i class="fas fa-quote-right"></i></button>
+                    <button type="button" class="format-btn" data-insert="`код`" title="Код"><i class="fas fa-code"></i></button>
+                    <button type="button" class="format-btn" data-insert="```\nкод\n```" title="Блок кода"><i class="fas fa-square-code"></i></button>
+                    <button type="button" class="format-btn" id="help-btn" title="Справка по Markdown"><i class="fas fa-question-circle"></i></button>
+                </div>
+            </div>
+            
+            <div class="editor-area" id="preview-area">
+                <div id="markdown-preview" class="form-control"></div>
+            </div>
+            
+            <div class="editor-actions">
+                <button type="submit" class="post-btn" id="publish-btn">Опубликовать</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Модальное окно справки по Markdown -->
+    <div class="modal" id="help-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Справка по Markdown</div>
+                <div class="modal-close">&times;</div>
+            </div>
+            <div class="markdown-help">
+                <table>
+                    <tr>
+                        <th>Элемент</th>
+                        <th>Синтаксис</th>
+                        <th>Пример</th>
+                    </tr>
+                    <tr>
+                        <td>Заголовок 1</td>
+                        <td><code># Текст</code></td>
+                        <td><h1 style="font-size:1.5em;margin:0">Текст</h1></td>
+                    </tr>
+                    <tr>
+                        <td>Заголовок 2</td>
+                        <td><code>## Текст</code></td>
+                        <td><h2 style="font-size:1.3em;margin:0">Текст</h2></td>
+                    </tr>
+                    <tr>
+                        <td>Жирный текст</td>
+                        <td><code>**Текст**</code></td>
+                        <td><strong>Текст</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Курсив</td>
+                        <td><code>_Текст_</code></td>
+                        <td><em>Текст</em></td>
+                    </tr>
+                    <tr>
+                        <td>Ссылка</td>
+                        <td><code>[текст](URL)</code></td>
+                        <td><a href="#" style="color:#1d9bf0">текст</a></td>
+                    </tr>
+                    <tr>
+                        <td>Изображение</td>
+                        <td><code>![alt](URL)</code></td>
+                        <td><em style="color:#71767b">Изображение</em></td>
+                    </tr>
+                    <tr>
+                        <td>Цитата</td>
+                        <td><code>> Текст</code></td>
+                        <td><blockquote style="margin:0;padding-left:10px;border-left:2px solid #1d9bf0;color:#71767b">Текст</blockquote></td>
+                    </tr>
+                    <tr>
+                        <td>Код</td>
+                        <td><code>`код`</code></td>
+                        <td><code style="background:#000;padding:2px 4px;border-radius:3px">код</code></td>
+                    </tr>
+                    <tr>
+                        <td>Блок кода</td>
+                        <td><code>```язык\nкод\n```</code></td>
+                        <td><div style="background:#000;padding:5px;border-radius:3px"><code>код</code></div></td>
+                    </tr>
+                    <tr>
+                        <td>Список</td>
+                        <td><code>- Элемент</code></td>
+                        <td><ul style="margin:0;padding-left:20px"><li>Элемент</li></ul></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Элементы интерфейса
+        const editorTab = document.querySelector('[data-tab="editor"]');
+        const previewTab = document.querySelector('[data-tab="preview"]');
+        const editorArea = document.getElementById('editor-area');
+        const previewArea = document.getElementById('preview-area');
+        const markdownEditor = document.getElementById('markdown-editor');
+        const markdownPreview = document.getElementById('markdown-preview');
+        const charCount = document.getElementById('char-count');
+        const publishBtn = document.getElementById('publish-btn');
+        const postTitle = document.getElementById('post-title');
+        const helpBtn = document.getElementById('help-btn');
+        const helpModal = document.getElementById('help-modal');
+        const modalClose = document.querySelector('.modal-close');
+        const closeBtn = document.querySelector('.close-btn');
+        const categoryTags = document.querySelectorAll('.category-tag');
+        const categoryInput = document.getElementById('post-category');
+        const postForm = document.getElementById('post-form');
+
+        // Выбор категории
+        categoryTags.forEach(tag => {
+            tag.addEventListener('click', function() {
+                categoryTags.forEach(t => t.classList.remove('selected'));
+                this.classList.add('selected');
+                categoryInput.value = this.getAttribute('data-category');
+            });
+        });
+
+        // Переключение между редактором и предпросмотром
+        editorTab.addEventListener('click', () => {
+            editorTab.classList.add('active');
+            previewTab.classList.remove('active');
+            editorArea.classList.add('active');
+            previewArea.classList.remove('active');
+        });
+
+        previewTab.addEventListener('click', () => {
+            previewTab.classList.add('active');
+            editorTab.classList.remove('active');
+            previewArea.classList.add('active');
+            editorArea.classList.remove('active');
+            updatePreview();
+        });
+
+        // Обновление предпросмотра
+        function updatePreview() {
+            markdownPreview.innerHTML = marked.parse(markdownEditor.value);
+        }
+
+        // Счетчик символов
+        function updateCharCount() {
+            const count = markdownEditor.value.length;
+            charCount.textContent = count;
+            
+            if (count > 5000) {
+                charCount.style.color = '#ff4d4d';
+            } else {
+                charCount.style.color = 'var(--secondary-color)';
+            }
+            
+            // Активировать кнопку публикации только если есть заголовок и текст
+            publishBtn.disabled = !(postTitle.value.trim() && markdownEditor.value.trim() && count <= 8218);
+        }
+
+        markdownEditor.addEventListener('input', () => {
+            updateCharCount();
+            
+            // Автоматически обновлять предпросмотр если он открыт
+            if (previewArea.classList.contains('active')) {
+                updatePreview();
+            }
+        });
+
+        postTitle.addEventListener('input', updateCharCount);
+
+        // Кнопки форматирования
+        document.querySelectorAll('.format-btn').forEach(btn => {
+            if (!btn.id) { // Исключаем кнопку справки
+                btn.addEventListener('click', function() {
+                    const textToInsert = this.getAttribute('data-insert');
+                    const textarea = markdownEditor;
+                    const start = textarea.selectionStart;
+                    const end = textarea.selectionEnd;
+                    const selectedText = textarea.value.substring(start, end);
+                    const newText = textToInsert.replace('текст', selectedText);
+                    
+                    // Вставка текста
+                    textarea.value = textarea.value.substring(0, start) + newText + textarea.value.substring(end);
+                    
+                    // Установка курсора
+                    const newCursorPos = start + newText.indexOf('текст');
+                    if (newText.includes('текст')) {
+                        textarea.setSelectionRange(newCursorPos, newCursorPos + selectedText.length);
+                    } else {
+                        textarea.setSelectionRange(start + newText.length, start + newText.length);
+                    }
+                    
+                    textarea.focus();
+                    updateCharCount();
+                });
+            }
+        });
+
+        // Справка по Markdown
+        helpBtn.addEventListener('click', () => {
+            helpModal.style.display = 'flex';
+        });
+
+        modalClose.addEventListener('click', () => {
+            helpModal.style.display = 'none';
+        });
+
+        // Закрытие редактора
+        closeBtn.addEventListener('click', () => {
+            if (postTitle.value || markdownEditor.value) {
+                if (confirm('У вас есть несохраненные изменения. Закрыть редактор?')) {
+                    window.location.href = 'index.html';
+                }
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Обработка отправки формы
+        postForm.addEventListener('submit', function(e) {
+            // Проверка длины контента
+            // if (markdownEditor.value.length > 5000) {
+            //     alert('Текст поста не должен превышать 5000 символов');
+            //     return;
+            // }
+            
+            // Здесь можно добавить AJAX-отправку или просто показать сообщение 
+            // В реальном приложении здесь будет отправка формы
+            // this.submit();
+            
+            // Для демонстрации просто переходим на главную
+            window.location.href = 'index.html';
+        });
+
+        // Инициализация
+        updateCharCount();
+    </script>
+</body>
+</html>
