@@ -6,7 +6,7 @@
     <title>Профиль | doupig.ru</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        a{
+        a {
             text-decoration: none;
             color: #fff;
         }
@@ -30,19 +30,26 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            display: flex;
             min-height: 100vh;
+            display: flex;
+            position: relative;
         }
 
-        /* Левый сайдбар */
+        /* Адаптивный сайдбар */
         .sidebar {
             width: 275px;
             padding: 8px 12px;
-            position: fixed;
             height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
             display: flex;
             flex-direction: column;
             border-right: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            z-index: 100;
+            background-color: var(--bg-color);
+            overflow-y: auto;
         }
 
         .logo {
@@ -65,6 +72,7 @@
             font-size: 20px;
             font-weight: 500;
             transition: background-color 0.2s;
+            white-space: nowrap;
         }
 
         .nav-item:hover {
@@ -75,10 +83,12 @@
             margin-right: 16px;
             width: 26px;
             text-align: center;
+            flex-shrink: 0;
         }
 
         .nav-item.active {
             font-weight: 700;
+            background-color: var(--hover-color);
         }
 
         .tweet-btn {
@@ -92,6 +102,8 @@
             margin-top: 16px;
             cursor: pointer;
             transition: background-color 0.2s;
+            width: 100%;
+            text-align: center;
         }
 
         .tweet-btn:hover {
@@ -106,6 +118,7 @@
             border-radius: 50px;
             cursor: pointer;
             transition: background-color 0.2s;
+            margin-bottom: 20px;
         }
 
         .profile-mini:hover {
@@ -117,27 +130,44 @@
             height: 40px;
             border-radius: 50%;
             margin-right: 12px;
+            flex-shrink: 0;
         }
 
         .profile-mini .info {
             flex-grow: 1;
+            overflow: hidden;
         }
 
         .profile-mini .name {
             font-weight: 700;
             font-size: 15px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .profile-mini .username {
             color: var(--secondary-color);
             font-size: 15px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         /* Центральный контент */
         .main-content {
-            flex: 1;
             margin-left: 275px;
+            width: calc(100% - 275px);
+            min-height: 100vh;
+            transition: all 0.3s ease;
             border-right: 1px solid var(--border-color);
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Новый контейнер для центрирования */
+        .center-container {
+            width: 100%;
             max-width: 600px;
         }
 
@@ -159,18 +189,20 @@
         .profile-header {
             position: relative;
         }
+        
         .banner-container {
             height: 200px;
-            overflow: hidden; /* Обрезает излишки */
+            overflow: hidden;
             position: relative;
         }
 
         .banner-image {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Аналог background-size: cover */
-            object-position: center; /* Центрирование */
+            object-fit: cover;
+            object-position: center;
         }
+        
         .banner {
             background-image: url('https://i.pinimg.com/736x/af/ad/c7/afadc7d79828c6d1d52a90867d685d55.jpg');
             height: 200px;
@@ -521,11 +553,38 @@
             text-decoration: underline;
         }
 
-        /* Мобильная адаптация */
+        /* Кнопка меню для мобильных */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1000;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Медиазапросы для адаптивности */
         @media (max-width: 1280px) {
             .sidebar {
                 width: 88px;
                 align-items: center;
+                padding: 8px;
+            }
+            
+            .nav-item {
+                width: 50px;
+                height: 50px;
+                padding: 0;
+                justify-content: center;
             }
             
             .nav-item span {
@@ -534,6 +593,7 @@
             
             .nav-item i {
                 margin-right: 0;
+                font-size: 24px;
             }
             
             .tweet-btn {
@@ -549,12 +609,24 @@
                 display: none;
             }
             
+            .profile-mini {
+                width: 50px;
+                height: 50px;
+                padding: 0;
+                justify-content: center;
+            }
+            
             .profile-mini .info {
                 display: none;
             }
             
+            .profile-mini img {
+                margin-right: 0;
+            }
+            
             .main-content {
                 margin-left: 88px;
+                width: calc(100% - 88px);
             }
         }
 
@@ -563,11 +635,35 @@
                 display: none;
             }
         }
+
+        @media (max-width: 500px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 275px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            .menu-toggle {
+                display: flex;
+            }
+        }
     </style>
 </head>
 <body>
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
     <!-- Левый сайдбар -->
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
         <div class="logo">
             <i class="fab fa-x-twitter"></i>
         </div>
@@ -592,116 +688,170 @@
         
         <a href="{% url 'posts:create' %}">
             <button class="tweet-btn">
-                
-                    <span>Опубликовать</span>
-                
+                <span>Опубликовать</span>
             </button>
         </a>
         
-            <div class="profile-mini">
-                <a href = "{% url 'user:profile' request.user.username %}">
-                    <div class="avatar-placeholder"></div>
-                            <div class="info">
-                                <div class="name">{{ user.first_name }} {{ user.last_name }}</div>
-                                <div class="username">{{ user.username }}</div>
-                            </div>
-                </a>
+        <div class="profile-mini">
+            <img src="https://via.placeholder.com/40" alt="Profile">
+            <div class="info">
+                <div class="name">{{ user.first_name }} {{ user.last_name }}</div>
+                <div class="username">@{{ user.username }}</div>
             </div>
+        </div>
     </div>
 
     <!-- Основной контент -->
-    <div class="main-content">
-        <div class="header">
-            <h1>{{ user.first_name }}</h1>
-        </div>
-        
-        <div class="profile-header">
-            <div class="banner">
-                <img src="https://i.pinimg.com/736x/af/ad/c7/afadc7d79828c6d1d52a90867d685d55.jpg" alt="Баннер профиля" class="banner-image">
+    <div class="main-content" id="mainContent">
+        <!-- Новый контейнер для центрирования -->
+        <div class="center-container">
+            <div class="header">
+                <h1>{{ user.first_name }}</h1>
             </div>
-            <div class="profile-info">
-                <div class="user-details">
-                    <h2>{{ user.first_name }} {{ user.last_name }}</h2>
-                    <div class="username">@{{ user.username }}</div>
-                    <div class="bio">
-                        {{ user.descriptions }}
+            
+            <div class="profile-header">
+                <div class="banner-container">
+                    <img src="https://i.pinimg.com/736x/af/ad/c7/afadc7d79828c6d1d52a90867d685d55.jpg" alt="Баннер профиля" class="banner-image">
+                </div>
+                <div class="profile-info">
+                    <div class="avatar-container">
+                        <div class="avatar"></div>
+                        <button class="edit-btn">Редактировать профиль</button>
                     </div>
                     
-                    <div class="user-stats">
-                        <div><span> {{ user.score }} </span> баллов </div>
+                    <div class="user-details">
+                        <h2>{{ user.first_name }} {{ user.last_name }}</h2>
+                        <div class="username">@{{ user.username }}</div>
+                        <div class="bio">
+                            {{ user.descriptions }}
+                        </div>
+                        
+                        <div class="user-stats">
+                            <div><span> {{ user.score }} </span> баллов </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="tabs">
-            <div class="tab">Посты</div>
-        </div>
-        
-        <div class="posts">
-            <!--  пример одного из постов   -->
-            {% for post in posts%}
-            <a style="text-decoration: none;" href="{% url 'posts:edit' post.pk %}">
-                <div class="post">
-                    <div class="post-content">
-                        <div class="post-header">
-                            <div class="post-author"> {{ post.title }}</div>
-                            <div class="post-username">{{ post.created_by }}</div>
-                            <div class="post-time">{{ post.created }}</div>
-                        </div>
-                        <div class="post-text">
-                            {{ post.description|truncatechars:50 }}
-                        </div>
-                        <div class="post-stats">
-
-                        <div class="post-stat">
-                            <i class="far fa-heart"></i>
-                            <span>{{ post.likes.count }}</span>
-                        </div>
-
-                    </div>
-                    </div>
-                </div>
-            </a>
-            {% endfor %}
             
+            <div class="tabs">
+                <div class="tab active">Посты</div>
+            </div>
+            
+            <div class="posts">
+                {% for post in posts %}
+                <a style="text-decoration: none;" href="{% url 'posts:edit' post.pk %}">
+                    <div class="post">
+                        <div class="post-avatar"></div>
+                        <div class="post-content">
+                            <div class="post-header">
+                                <div class="post-author">{{ post.title }}</div>
+                                <div class="post-username">@{{ post.created_by }}</div>
+                                <div class="post-time">{{ post.created }}</div>
+                            </div>
+                            <div class="post-text">
+                                {{ post.description|truncatechars:50 }}
+                            </div>
+                            <div class="post-stats">
+                                <div class="post-stat">
+                                    <i class="far fa-heart"></i>
+                                    <span>{{ post.likes.count }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
         </div>
     </div>
 
     <script>
-        
-        // Интерактивность для кнопки "Читать"
-        document.querySelectorAll('.follow-btn').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                if (this.textContent === 'Читать') {
-                    this.textContent = 'Отменить';
-                    this.style.backgroundColor = 'transparent';
-                    this.style.color = 'var(--primary-color)';
-                    this.style.border = '1px solid var(--border-color)';
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            
+            // Проверяем ширину экрана и показываем/скрываем кнопку меню
+            function checkScreenSize() {
+                if (window.innerWidth <= 500) {
+                    menuToggle.style.display = 'flex';
+                    sidebar.classList.remove('active');
+                } else if (window.innerWidth <= 1280) {
+                    menuToggle.style.display = 'none';
+                    sidebar.style.width = '88px';
+                    sidebar.style.padding = '8px';
+                    mainContent.style.marginLeft = '88px';
+                    mainContent.style.width = 'calc(100% - 88px)';
                 } else {
-                    this.textContent = 'Читать';
-                    this.style.backgroundColor = '';
-                    this.style.color = '';
-                    this.style.border = '';
+                    menuToggle.style.display = 'none';
+                    sidebar.style.width = '275px';
+                    sidebar.style.padding = '8px 12px';
+                    mainContent.style.marginLeft = '275px';
+                    mainContent.style.width = 'calc(100% - 275px)';
+                }
+            }
+            
+            // Обработчик клика по кнопке меню
+            menuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+                
+                // Блокируем прокрутку основного контента при открытом меню
+                if (sidebar.classList.contains('active')) {
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    document.body.style.overflow = '';
                 }
             });
-        });
-        
-        // Анимация сердечек в постах
-        document.querySelectorAll('.post-stat:nth-child(3)').forEach(heart => {
-            heart.addEventListener('click', function() {
-                const icon = this.querySelector('i');
-                if (icon.classList.contains('far')) {
-                    icon.classList.remove('far');
-                    icon.classList.add('fas', 'fa-heart');
-                    icon.style.color = '#f91880';
-                } else {
-                    icon.classList.remove('fas', 'fa-heart');
-                    icon.classList.add('far');
-                    icon.style.color = '';
+            
+            // Закрываем меню при клике вне его области
+            document.addEventListener('click', function(event) {
+                if (window.innerWidth <= 500 && 
+                    !sidebar.contains(event.target) && 
+                    !menuToggle.contains(event.target) && 
+                    sidebar.classList.contains('active')) {
+                    sidebar.classList.remove('active');
+                    document.body.style.overflow = '';
                 }
+            });
+            
+            // Проверяем при загрузке и при изменении размера окна
+            checkScreenSize();
+            window.addEventListener('resize', checkScreenSize);
+            
+            // Интерактивность для кнопки "Читать"
+            document.querySelectorAll('.follow-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    if (this.textContent === 'Читать') {
+                        this.textContent = 'Отменить';
+                        this.style.backgroundColor = 'transparent';
+                        this.style.color = 'var(--primary-color)';
+                        this.style.border = '1px solid var(--border-color)';
+                    } else {
+                        this.textContent = 'Читать';
+                        this.style.backgroundColor = '';
+                        this.style.color = '';
+                        this.style.border = '';
+                    }
+                });
+            });
+            
+            // Анимация сердечек в постах
+            document.querySelectorAll('.post-stat').forEach(heart => {
+                heart.addEventListener('click', function() {
+                    const icon = this.querySelector('i');
+                    if (icon.classList.contains('far')) {
+                        icon.classList.remove('far');
+                        icon.classList.add('fas');
+                        icon.style.color = '#f91880';
+                    } else {
+                        icon.classList.remove('fas');
+                        icon.classList.add('far');
+                        icon.style.color = '';
+                    }
+                });
             });
         });
     </script>
 </body>
+</html>

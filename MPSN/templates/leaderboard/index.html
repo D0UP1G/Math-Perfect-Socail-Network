@@ -12,9 +12,9 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
-        a{
-            text-decoration: 0;
-            color:#fff;
+        a {
+            text-decoration: none;
+            color: inherit;
         }
 
         :root {
@@ -33,28 +33,26 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            display: flex;
             min-height: 100vh;
-        }
-        a.leaderboard-item {
             display: flex;
-            align-items: center;
-            text-decoration: none;
-            color: inherit; /* Сохраняем цвет текста как у родителя */
-            /* остальные ваши стили */
+            position: relative;
         }
 
-        a.leaderboard-item:hover {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
+        /* Стили для сайдбара */
         .sidebar {
-            width: 275px;primary
+            width: 275px;
             padding: 8px 12px;
-            position: fixed;
             height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
             display: flex;
             flex-direction: column;
             border-right: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            z-index: 100;
+            background-color: var(--bg-color);
+            overflow-y: auto;
         }
 
         .logo {
@@ -77,6 +75,7 @@
             font-size: 20px;
             font-weight: 500;
             transition: background-color 0.2s;
+            white-space: nowrap;
         }
 
         .nav-item:hover {
@@ -87,6 +86,7 @@
             margin-right: 16px;
             width: 26px;
             text-align: center;
+            flex-shrink: 0;
         }
 
         .nav-item.active {
@@ -105,6 +105,8 @@
             margin-top: 16px;
             cursor: pointer;
             transition: background-color 0.2s;
+            width: 100%;
+            text-align: center;
         }
 
         .tweet-btn:hover {
@@ -119,6 +121,7 @@
             border-radius: 50px;
             cursor: pointer;
             transition: background-color 0.2s;
+            margin-bottom: 20px;
         }
 
         .profile-mini:hover {
@@ -130,27 +133,45 @@
             height: 40px;
             border-radius: 50%;
             margin-right: 12px;
+            flex-shrink: 0;
         }
 
         .profile-mini .info {
             flex-grow: 1;
+            overflow: hidden;
         }
 
         .profile-mini .name {
             font-weight: 700;
             font-size: 15px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .profile-mini .username {
             color: var(--secondary-color);
             font-size: 15px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
+        /* Основное содержимое */
         .main-content {
-            flex: 1;
             margin-left: 275px;
-            border-right: 1px solid var(--border-color);
+            width: calc(100% - 275px);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Новый контейнер для центрирования */
+        .center-container {
+            width: 100%;
             max-width: 600px;
+            border-right: 1px solid var(--border-color);
         }
 
         .header {
@@ -316,6 +337,7 @@
             color: #fff;
         }
 
+        /* Правая колонка */
         .right-sidebar {
             width: 350px;
             padding: 16px;
@@ -325,163 +347,38 @@
             overflow-y: auto;
         }
 
-        .search-container {
-            position: sticky;
-            top: 0;
-            background-color: var(--bg-color);
-            padding: 12px 0;
-            z-index: 10;
-        }
-
-        .search-box {
-            background-color: var(--container-color);
-            border-radius: 50px;
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-        }
-
-        .search-box i {
-            color: var(--secondary-color);
-            margin-right: 12px;
-        }
-
-        .search-box input {
-            background: transparent;
+        /* Кнопка меню для мобильных */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1000;
+            background: var(--primary-color);
+            color: white;
             border: none;
-            color: var(--text-color);
-            font-size: 15px;
-            width: 100%;
-            outline: none;
-        }
-
-        .trends-container {
-            background-color: var(--container-color);
-            border-radius: 16px;
-            margin-top: 16px;
-            overflow: hidden;
-        }
-
-        .section-title {
-            padding: 16px;
-            font-size: 20px;
-            font-weight: 800;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .trend-item {
-            padding: 16px;
-            border-bottom: 1px solid var(--border-color);
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .trend-item:hover {
-            background-color: rgba(255, 255, 255, 0.03);
-        }
-
-        .trend-category {
-            color: var(--secondary-color);
-            font-size: 13px;
-            margin-bottom: 4px;
-        }
-
-        .trend-name {
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .trend-count {
-            color: var(--secondary-color);
-            font-size: 13px;
-        }
-
-        .show-more {
-            padding: 16px;
-            color: var(--primary-color);
-            cursor: pointer;
-        }
-
-        .who-to-follow {
-            background-color: var(--container-color);
-            border-radius: 16px;
-            margin-top: 16px;
-            overflow: hidden;
-        }
-
-        .user-to-follow {
-            padding: 16px;
-            display: flex;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .user-to-follow:hover {
-            background-color: rgba(255, 255, 255, 0.03);
-        }
-
-        .user-to-follow img {
-            width: 48px;
-            height: 48px;
             border-radius: 50%;
-            margin-right: 12px;
-            background-color: #333;
-        }
-
-        .user-info-right {
-            flex-grow: 1;
-        }
-
-        .user-info-right .name {
-            font-weight: 700;
-        }
-
-        .user-info-right .username {
-            color: var(--secondary-color);
-        }
-
-        .follow-btn {
-            background-color: var(--text-color);
-            color: var(--bg-color);
-            border: none;
-            border-radius: 50px;
-            padding: 8px 16px;
-            font-weight: 700;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
             cursor: pointer;
+            align-items: center;
+            justify-content: center;
         }
 
-        .follow-btn:hover {
-            background-color: #e6e6e6;
-        }
-
-        .footer {
-            padding: 16px;
-            color: var(--secondary-color);
-            font-size: 13px;
-        }
-
-        .footer-links {
-            display: flex;
-            flex-wrap: wrap;
-            margin-bottom: 8px;
-        }
-
-        .footer-link {
-            margin-right: 12px;
-            margin-bottom: 4px;
-            cursor: pointer;
-        }
-
-        .footer-link:hover {
-            text-decoration: underline;
-        }
-
+        /* Медиазапросы для адаптивности */
         @media (max-width: 1280px) {
             .sidebar {
                 width: 88px;
                 align-items: center;
+                padding: 8px;
+            }
+            
+            .nav-item {
+                width: 50px;
+                height: 50px;
+                padding: 0;
+                justify-content: center;
             }
             
             .nav-item span {
@@ -490,6 +387,7 @@
             
             .nav-item i {
                 margin-right: 0;
+                font-size: 24px;
             }
             
             .tweet-btn {
@@ -505,12 +403,24 @@
                 display: none;
             }
             
+            .profile-mini {
+                width: 50px;
+                height: 50px;
+                padding: 0;
+                justify-content: center;
+            }
+            
             .profile-mini .info {
                 display: none;
             }
             
+            .profile-mini img {
+                margin-right: 0;
+            }
+            
             .main-content {
                 margin-left: 88px;
+                width: calc(100% - 88px);
             }
         }
 
@@ -519,10 +429,34 @@
                 display: none;
             }
         }
+
+        @media (max-width: 500px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 275px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            .menu-toggle {
+                display: flex;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="sidebar">
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="sidebar" id="sidebar">
         <div class="logo">
             <i class="fab fa-x-twitter"></i>
         </div>
@@ -546,176 +480,107 @@
         </a>
         <a href="{% url 'posts:create' %}">
             <button class="tweet-btn">
-                
-                    <span>Опубликовать</span>
-                
+                <span>Опубликовать</span>
             </button>
         </a>
         <div class="profile-mini">
-                <a href = "{% url 'user:profile' request.user.username %}">
-                            <div class="info">
-                                <div class="name">{{ user.first_name }} {{ user.last_name }}</div>
-                                <div class="username">{{ user.username }}</div>
-                    </div>
-                </a>
+            <img src="https://via.placeholder.com/40" alt="Profile">
+            <div class="info">
+                <div class="name">{{ user.first_name }} {{ user.last_name }}</div>
+                <div class="username">@{{ user.username }}</div>
+            </div>
         </div>
     </div>
 
-    <div class="main-content">
-        <div class="header">
-            <h1>Лидерборд</h1>
-        </div>
-        
-        <div class="leaderboard-header">
-            <h2>Топ игроков</h2>
-            <p>Рейтинг участников по количеству набранных баллов</p>
-        </div>
-        
-        <div class="leaderboard">
-            <!-- Первое место -->
-            {% for user in users %}
-                <a href="{% url 'user:profile' user.username %}" class="leaderboard-item">
-                    <div class="rank rank-{{ forloop.counter }}">{{ forloop.counter }}</div>
-                            <div class="user-info">
-                                <div class="leaderboard-name">{{ user.first_name }} {{ user.last_name }}</div>
-                                <div class="leaderboard-username">@{{ user.username }}</div>
-                            </div>
-                    <div class="leaderboard-points">{{ user.score }}</div>
-                </a>
-            {% endfor %}
-            
-            <!-- Второе место
-            <div class="leaderboard-item">
-                <div class="rank rank-2">2</div>
-                <div class="leaderboard-avatar"></div>
-                <div class="user-info">
-                    <div class="leaderboard-name">Мария Сидорова</div>
-                    <div class="leaderboard-username">@m_sidorova</div>
-                    <div class="badges">
-                        <div class="badge silver">Серебро</div>
-                        <div class="badge">Топ 1%</div>
-                    </div>
-                </div>
-                <div class="leaderboard-points">11230</div>
+    <div class="main-content" id="mainContent">
+        <!-- Новый контейнер для центрирования -->
+        <div class="center-container">
+            <div class="header">
+                <h1>Лидерборд</h1>
             </div>
             
-           
-            <div class="leaderboard-item">
-                <div class="rank rank-3">3</div>
-                <div class="leaderboard-avatar"></div>
-                <div class="user-info">
-                    <div class="leaderboard-name">Дмитрий Петров</div>
-                    <div class="leaderboard-username">@dmitry_p</div>
-                    <div class="badges">
-                        <div class="badge bronze">Бронза</div>
-                        <div class="badge">Топ 1%</div>
-                    </div>
-                </div>
-                <div class="leaderboard-points">10540</div>
+            <div class="leaderboard-header">
+                <h2>Топ игроков</h2>
+                <p>Рейтинг участников по количеству набранных баллов</p>
             </div>
             
-            <div class="leaderboard-item">
-                <div class="rank rank-other">4</div>
-                <div class="leaderboard-avatar"></div>
-                <div class="user-info">
-                    <div class="leaderboard-name">Екатерина Волкова</div>
-                    <div class="leaderboard-username">@ekaterina_v</div>
-                    <div class="badges">
-                        <div class="badge">Топ 1%</div>
-                    </div>
-                </div>
-                <div class="leaderboard-points">9870</div>
+            <div class="leaderboard">
+                {% for user in users %}
+                    <a href="{% url 'user:profile' user.username %}" class="leaderboard-item">
+                        <div class="rank rank-{{ forloop.counter }}">{{ forloop.counter }}</div>
+                        <div class="leaderboard-avatar"></div>
+                        <div class="user-info">
+                            <div class="leaderboard-name">{{ user.first_name }} {{ user.last_name }}</div>
+                            <div class="leaderboard-username">@{{ user.username }}</div>
+                        </div>
+                        <div class="leaderboard-points">{{ user.score }}</div>
+                    </a>
+                {% endfor %}
             </div>
-            
-            <div class="leaderboard-item">
-                <div class="rank rank-other">5</div>
-                <div class="leaderboard-avatar"></div>
-                <div class="user-info">
-                    <div class="leaderboard-name">Андрей Смирнов</div>
-                    <div class="leaderboard-username">@andrey_s</div>
-                    <div class="badges">
-                        <div class="badge">Топ 1%</div>
-                    </div>
-                </div>
-                <div class="leaderboard-points">9320</div>
-            </div>
-            
-            <div class="leaderboard-item">
-                <div class="rank rank-other">6</div>
-                <div class="leaderboard-avatar"></div>
-                <div class="user-info">
-                    <div class="leaderboard-name">Ольга Кузнецова</div>
-                    <div class="leaderboard-username">@olga_k</div>
-                    <div class="badges">
-                        <div class="badge">Топ 5%</div>
-                    </div>
-                </div>
-                <div class="leaderboard-points">8765</div>
-            </div>
-            
-            <div class="leaderboard-item">
-                <div class="rank rank-other">7</div>
-                <div class="leaderboard-avatar"></div>
-                <div class="user-info">
-                    <div class="leaderboard-name">Сергей Попов</div>
-                    <div class="leaderboard-username">@sergey_p</div>
-                </div>
-                <div class="leaderboard-points">8128</div>
-            </div>
-            
-            <div class="leaderboard-item">
-                <div class="rank rank-other">8</div>
-                <div class="leaderboard-avatar"></div>
-                <div class="user-info">
-                    <div class="leaderboard-name">Анна Васильева</div>
-                    <div class="leaderboard-username">@anna_v</div>
-                </div>
-                <div class="leaderboard-points">7650</div>
-            </div>
-            
-            <div class="leaderboard-item">
-                <div class="rank rank-other">9</div>
-                <div class="leaderboard-avatar"></div>
-                <div class="user-info">
-                    <div class="leaderboard-name">Игорь Соколов</div>
-                    <div class="leaderboard-username">@igor_s</div>
-                </div>
-                <div class="leaderboard-points">7210</div>
-            </div>
-            
-            <div class="leaderboard-item">
-                <div class="rank rank-other">10</div>
-                <div class="leaderboard-avatar"></div>
-                <div class="user-info">
-                    <div class="leaderboard-name">Наталья Михайлова</div>
-                    <div class="leaderboard-username">@natalia_m</div>
-                </div>
-                <div class="leaderboard-points">6890</div>
-            </div>
-             -->
         </div>
     </div>
 
     <script>
-        // Фильтры по времени
-       
-        
-        // Переход к профилю из правой колонки
-        document.querySelectorAll('.user-to-follow .follow-btn').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const username = this.closest('.user-to-follow').querySelector('.username').textContent;
-                alert(`Переход к профилю: ${username}`);
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            
+            // Проверяем ширину экрана и показываем/скрываем кнопку меню
+            function checkScreenSize() {
+                if (window.innerWidth <= 500) {
+                    menuToggle.style.display = 'flex';
+                    sidebar.classList.remove('active');
+                } else if (window.innerWidth <= 1280) {
+                    menuToggle.style.display = 'none';
+                    sidebar.style.width = '88px';
+                    sidebar.style.padding = '8px';
+                    mainContent.style.marginLeft = '88px';
+                    mainContent.style.width = 'calc(100% - 88px)';
+                } else {
+                    menuToggle.style.display = 'none';
+                    sidebar.style.width = '275px';
+                    sidebar.style.padding = '8px 12px';
+                    mainContent.style.marginLeft = '275px';
+                    mainContent.style.width = 'calc(100% - 275px)';
+                }
+            }
+            
+            // Обработчик клика по кнопке меню
+            menuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+                
+                // Блокируем прокрутку основного контента при открытом меню
+                if (sidebar.classList.contains('active')) {
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    document.body.style.overflow = '';
+                }
             });
-        });
-        
-        // Анимация для наведения на элементы
-        document.querySelectorAll('.leaderboard-item').forEach(item => {
-            item.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateX(5px)';
+            
+            // Закрываем меню при клике вне его области
+            document.addEventListener('click', function(event) {
+                if (window.innerWidth <= 500 && 
+                    !sidebar.contains(event.target) && 
+                    !menuToggle.contains(event.target) && 
+                    sidebar.classList.contains('active')) {
+                    sidebar.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
             });
-            item.addEventListener('mouseleave', function() {
-                this.style.transform = '';
+            
+            // Проверяем при загрузке и при изменении размера окна
+            checkScreenSize();
+            window.addEventListener('resize', checkScreenSize);
+            
+            // Анимация для наведения на элементы лидерборда
+            document.querySelectorAll('.leaderboard-item').forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateX(5px)';
+                });
+                item.addEventListener('mouseleave', function() {
+                    this.style.transform = '';
+                });
             });
         });
     </script>
