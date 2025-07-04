@@ -590,20 +590,23 @@
             </div>
         </a>
         
-        <button class="tweet-btn">
-            <a href="{% url 'posts:create' %}">
-                <span>Опубликовать</span>
-            </a>
-        </button>
+        <a href="{% url 'posts:create' %}">
+            <button class="tweet-btn">
+                
+                    <span>Опубликовать</span>
+                
+            </button>
+        </a>
         
-        <div class="profile-mini">
-            <div class="avatar-placeholder"></div>
-            <div class="info">
-                <div class="name">{{ user.first_name }} {{ user.last_name }}</div>
-                <div class="username">{{ user.username }}</div>
+            <div class="profile-mini">
+                <a href = "{% url 'user:profile' request.user.username %}">
+                    <div class="avatar-placeholder"></div>
+                            <div class="info">
+                                <div class="name">{{ user.first_name }} {{ user.last_name }}</div>
+                                <div class="username">{{ user.username }}</div>
+                            </div>
+                </a>
             </div>
-            <i class="fas fa-ellipsis-h"></i>
-        </div>
     </div>
 
     <!-- Основной контент -->

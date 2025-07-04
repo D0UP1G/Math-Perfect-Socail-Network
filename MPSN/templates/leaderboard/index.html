@@ -36,7 +36,17 @@
             display: flex;
             min-height: 100vh;
         }
+        a.leaderboard-item {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: inherit; /* Сохраняем цвет текста как у родителя */
+            /* остальные ваши стили */
+        }
 
+        a.leaderboard-item:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
         .sidebar {
             width: 275px;primary
             padding: 8px 12px;
@@ -534,18 +544,20 @@
                 <span>Профиль</span>
             </div>
         </a>
-        <button class="tweet-btn">
-            <a href="{% url 'posts:create' %}">
-                <span>Опубликовать</span>
-            </a>
-        </button>
+        <a href="{% url 'posts:create' %}">
+            <button class="tweet-btn">
+                
+                    <span>Опубликовать</span>
+                
+            </button>
+        </a>
         <div class="profile-mini">
-            <div class="avatar-placeholder"></div>
-            <div class="info">
-                <div class="name">{{ request.user.first_name }} {{ request.user.last_name }}</div>
-                <div class="username">@{{ request.user.username }}</div>
-            </div>
-            <i class="fas fa-ellipsis-h"></i>
+                <a href = "{% url 'user:profile' request.user.username %}">
+                            <div class="info">
+                                <div class="name">{{ user.first_name }} {{ user.last_name }}</div>
+                                <div class="username">{{ user.username }}</div>
+                    </div>
+                </a>
         </div>
     </div>
 
@@ -557,28 +569,19 @@
         <div class="leaderboard-header">
             <h2>Топ игроков</h2>
             <p>Рейтинг участников по количеству набранных баллов</p>
-            
-            <div class="time-filters">
-                <button class="time-filter active">Все время</button>
-            </div>
         </div>
         
         <div class="leaderboard">
             <!-- Первое место -->
             {% for user in users %}
-                <div class="leaderboard-item">
+                <a href="{% url 'user:profile' user.username %}" class="leaderboard-item">
                     <div class="rank rank-{{ forloop.counter }}">{{ forloop.counter }}</div>
-                    <div class="leaderboard-avatar"></div>
-                    <div class="user-info">
-                        <div class="leaderboard-name">{{ user.first_name }} {{ user.last_name }}</div>
-                        <div class="leaderboard-username">@{{ user.username }}</div>
-                        <!-- <div class="badges">
-                            <div class="badge gold">Золото</div>
-                            <div class="badge">Топ 1%</div>
-                        </div> -->
-                    </div>
+                            <div class="user-info">
+                                <div class="leaderboard-name">{{ user.first_name }} {{ user.last_name }}</div>
+                                <div class="leaderboard-username">@{{ user.username }}</div>
+                            </div>
                     <div class="leaderboard-points">{{ user.score }}</div>
-                </div>
+                </a>
             {% endfor %}
             
             <!-- Второе место

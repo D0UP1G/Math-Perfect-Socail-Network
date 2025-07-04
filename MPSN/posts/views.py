@@ -1,11 +1,17 @@
 from django.shortcuts import render, redirect
-from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 
+
 from .forms import PostForm
 from .models import PostModel
+from user.models import CustomUser
+
+
+import json 
+
 
 @login_required
 def create_post_view(request):
@@ -67,4 +73,38 @@ def handle_like(request, pk, action):
         'success': True,
         'likes_count': post.likes.count(),
         'is_liked': request.user in post.likes.all()
+    })
+
+@login_required
+@require_POST
+def handle_count(request, pk):
+    post = get_object_or_404(PostModel, pk=pk)
+    data = json.loads(request.body)
+    amount = data.get('amount', 5)
+
+    # Проверка баланса пользователя
+    if request.user.score < amount:
+        return JsonResponse({
+            'success': False,
+            'error': 'Недостаточно баллов'
+        }, status=400)
+
+    # Обновление балансов
+    request.user.score -= amount
+    request.user.save()
+    
+    post.created_by.score += amount
+    post.created_by.save()
+
+    # Создание записи о донате (если есть модель Donation)
+    # Donation.objects.create(
+    #     from_user=request.user,
+    #     to_user=post.created_by,
+    #     post=post,
+    #     amount=amount
+    # )
+
+    return JsonResponse({
+        'success': True,
+        'new_balance': request.user.score
     })

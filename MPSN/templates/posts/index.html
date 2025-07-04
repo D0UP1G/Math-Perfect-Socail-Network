@@ -263,7 +263,7 @@
 <body>
     <div class="header">
         <div class="close-btn">
-            <a style="color: #fff;" href="">
+            <a style="color: #fff;" href="{% url 'user:profile' post.created_by.username %}">
             <i class="fas fa-arrow-left"></i>
             </a>
         </div>
@@ -275,8 +275,12 @@
         <div class="author-info">
             <div class="author-avatar"></div>
             <div>
-                <div class="author-name">{{ post.created_by.get_full_name }} | @{{ post.created_by.username }}</div>
+                <a href="{% url 'user:profile' post.created_by.username %}"
+                    style="color: #fff;
+                        text-decoration: 0;">
+                <div class="author-name">{{ post.created_by.first_name }} · {{ post.created_by.last_name }} | @{{ post.created_by.username }}</div>
                 <div class="author-username">@{{ post.created_by.username }}</div>
+                    </a>
             </div>
         </div>
 

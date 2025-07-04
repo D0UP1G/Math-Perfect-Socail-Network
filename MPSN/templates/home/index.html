@@ -219,34 +219,8 @@
             padding: 20px;
             margin-top: 20px;
         }
-
-        .donate-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            z-index: 100;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .donate-content {
-            background-color: var(--container-color);
-            padding: 30px;
-            border-radius: 16px;
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        .donate-amounts {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin: 20px 0;
+        .action-btn.donate.active .fa-coins {
+            color: #FFD700; /* Золотой цвет */
         }
 
         .amount-btn {
@@ -316,8 +290,13 @@
             <div class="post-header">
                 <div class="post-avatar"></div>
                 <div>
-                    <div class="post-author">{{ post.created_by.first_name }} {{ post.created_by.last_name }}</div>
-                    <div class="post-username">@{{ post.created_by.username }} · </div>
+                    <a href="{% url 'user:profile' post.created_by.username %}"
+                    style="color: #fff;
+                        text-decoration: 0;">
+
+                    <div class="post-author">{{ post.created_by.first_name }} · {{ post.created_by.last_name }}</div>
+                    <div class="post-username">@{{ post.created_by.username }}  </div>
+                    </a>
                 </div>
             </div>
             
@@ -346,26 +325,6 @@
         Это единственный пост на странице. Прокрутка отключена.
     </div>
 </div>
-
-<div class="donate-modal" id="donateModal">
-    <div class="donate-content">
-        <span class="close-modal">&times;</span>
-        <h3>Отправить баллы автору</h3>
-        <p>Выберите количество баллов для отправки</p>
-        
-        <div class="donate-amounts">
-            <button class="amount-btn" data-amount="10">10 баллов</button>
-            <button class="amount-btn" data-amount="50">50 баллов</button>
-            <button class="amount-btn" data-amount="100">100 баллов</button>
-            <button class="amount-btn" data-amount="200">200 баллов</button>
-            <button class="amount-btn" data-amount="500">500 баллов</button>
-            <button class="amount-btn" data-amount="1000">1000 баллов</button>
-        </div>
-        
-        <button class="btn btn-primary" id="confirmDonate">Подтвердить</button>
-    </div>
-</div>
-
 <script>
         document.addEventListener('DOMContentLoaded', function() {
             // ===== 1. ИСПРАВЛЕННАЯ ОБРАБОТКА MARKDOWN =====
@@ -465,40 +424,42 @@
             const donateModal = document.getElementById('donateModal');
             const closeModal = document.querySelector('.close-modal');
             
-            if (donateBtn && donateModal && closeModal) {
-                donateBtn.addEventListener('click', function() {
-                    donateModal.style.display = 'flex';
-                });
+            donateBtn.addEventListener('click', async function() {
+                const url = "{% url 'posts:api_score' post.pk %}";
+                const response = fetch(url, {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'X-CSRFToken': getCSRFToken(), // Для Django CSRF защиты
+                                        },
+                                        body: JSON.stringify({
+                                            key1: 'value1',
+                                            key2: 'value2'
+                                        })
+                                })
+                    if (donateBtn.classList.contains('active')) {
+                        donateBtn.classList.add('active');
+                    } else {
+                        donateBtn.classList.add('active');
+                    }
                 
-                closeModal.addEventListener('click', function() {
-                    donateModal.style.display = 'none';
-                });
-                
-                // Выбор суммы доната
-                const amountBtns = document.querySelectorAll('.amount-btn');
-                amountBtns.forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        amountBtns.forEach(b => b.classList.remove('active'));
-                        this.classList.add('active');
-                    });
-                });
-                
-                // Подтверждение доната
-                const confirmBtn = document.getElementById('confirmDonate');
-                if (confirmBtn) {
-                    confirmBtn.addEventListener('click', function() {
-                        const selectedAmount = document.querySelector('.amount-btn.active')?.dataset.amount;
-                        if (selectedAmount) {
-                            alert(`Вы отправили ${selectedAmount} баллов пользователю @ivan_petrov`);
-                            donateModal.style.display = 'none';
-                            donateBtn.classList.add('active');
-                        } else {
-                            alert('Пожалуйста, выберите сумму');
-                        }
-                    });
+            })
+            function getCSRFToken() {
+                    // 1. Попробуем получить из мета-тега (стандартный способ в Django)
+                    const metaTag = document.querySelector('meta[name="csrf-token"]');
+                    if (metaTag) return metaTag.content;
+                    
+                    // 2. Попробуем получить из куки
+                    const cookieValue = document.cookie
+                        .split('; ')
+                        .find(row => row.startsWith('csrftoken='))
+                        ?.split('=')[1];
+                    
+                    if (cookieValue) return cookieValue;
+                    
+                    // 3. Используем токен из шаблона (если передается)
+                    return '{{ csrf_token }}' || '';
                 }
-            }
-            
             // ===== 4. ПРОПУСК ПОСТА =====
             const skipBtn = document.querySelector('.action-btn.skip');
             if (skipBtn) {
