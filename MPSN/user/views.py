@@ -12,13 +12,19 @@ from posts.models import PostModel
 def login_view(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
+        print(form.is_valid())
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
             user = authenticate(request, username=username, password=password)
+            print(user)
             if user:
                 login(request, user)
                 return redirect('user:profile', username=user.username )
+            else:
+                return render(request, 'user/login.html', {'form': form, 'errors':'Неверные логин или пароль'})
+        else:
+            return render(request, 'user/login.html', {'form': form, 'errors':'Неверные логин или пароль'})
     else:
         form = LoginForm()
     return render(request, 'user/login.html', {'form': form})
@@ -34,6 +40,7 @@ def register_view(request):
     else:
         form = CustomUserCreationForm()
     return render(request, 'user/register.html', {'form': form})
+
 @login_required()
 def logout_view(request):
     logout(request)

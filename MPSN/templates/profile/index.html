@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Профиль | doupig.ru</title>
+    <title>Профиль |</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         a {
@@ -694,7 +694,7 @@
         <div class="profile-mini">
             <div class="info">
                 <div class="name">{{ user.first_name }} {{ user.last_name }}</div>
-                <div class="username">@{{ user.username }}</div>
+                <a href="{% url 'user:logout' %}"><div class="username">Выход</div></a>
             </div>
         </div>
     </div>
@@ -854,6 +854,61 @@
                 });
             });
         });
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ваш существующий JavaScript код
+            // ... (ваш текущий JavaScript) ...
+
+            // Новая улучшенная функция для удаления Markdown-тегов
+            function removeMarkdownTags(text) {
+                if (!text) return '';
+                
+                // Сохраняем переносы строк
+                text = text.replace(/\n/g, ' [NEWLINE] ');
+                
+                // Удаляем Markdown-теги, сохраняя текст
+                let cleanText = text
+                    // Изображения ![alt](url)
+                    .replace(/!\[(.*?)\]\(.*?\)/g, '$1')
+                    // Ссылки [text](url)
+                    .replace(/\[(.*?)\]\(.*?\)/g, '$1')
+                    // Жирный **text** или __text__
+                    .replace(/\*\*(.*?)\*\*/g, '$1')
+                    .replace(/__(.*?)__/g, '$1')
+                    // Курсив *text* или _text_
+                    .replace(/\*(.*?)\*/g, '$1')
+                    .replace(/_(.*?)_/g, '$1')
+                    // Зачеркивание ~~text~~
+                    .replace(/~~(.*?)~~/g, '$1')
+                    // Код `code` и ```code```
+                    .replace(/`{1,3}(.*?)`{1,3}/g, '$1')
+                    // Заголовки #, ## и т.д.
+                    .replace(/^#{1,6}\s+/gm, '')
+                    // Горизонтальные линии ---, ***
+                    .replace(/^[-*_]{3,}$/gm, '')
+                    // HTML-теги
+                    .replace(/<[^>]*>/g, '');
+                
+                // Восстанавливаем переносы строк
+                cleanText = cleanText.replace(/\[NEWLINE\]/g, '\n');
+                
+                return cleanText.trim();
+            }
+
+            // Применяем функцию к тексту постов
+            document.querySelectorAll('.post-text').forEach(el => {
+                el.textContent = removeMarkdownTags(el.textContent);
+            });
+
+            // Применяем функцию к описанию профиля
+            const bioElement = document.querySelector('.bio');
+            if (bioElement) {
+                bioElement.textContent = removeMarkdownTags(bioElement.textContent);
+            }
+            
+            // Для тестирования можно раскомментировать:
+            // console.log(removeMarkdownTags("**Жирный** и _курсив_ текст с [ссылкой](url)"));
+        });
     </script>
+    
 </body>
 </html>
