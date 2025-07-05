@@ -1,5 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserChangeForm
+from django.utils.translation import gettext_lazy as _
+
 from .models import CustomUser
 
 class CustomUserCreationForm(UserCreationForm):
@@ -96,3 +99,60 @@ class LoginForm(forms.Form):
                 'required': "Пожалуйста, введите пароль"
             }
     }
+
+class CustomUserEditForm(UserChangeForm):
+    # Кастомизация полей
+    descriptions = forms.CharField(
+        label=_('Описание профиля'),
+        widget=forms.Textarea(attrs={
+            'rows': 3,
+            'class': 'form-control',
+            'placeholder': _('Расскажите о себе...')
+        }),
+        max_length=100,
+        required=False
+    )
+    
+    birth_date = forms.DateField(
+        label=_('Дата рождения'),
+        widget=forms.DateInput(attrs={
+            'type': 'date',
+            'class': 'form-control'
+        })
+    )
+    
+    banner_url = forms.URLField(
+        label=_('URL баннера'),
+        widget=forms.URLInput(attrs={
+            'class': 'form-control',
+            'placeholder': _('https://example.com/image.jpg')
+        }),
+        required=False
+    )
+
+    class Meta:
+        model = CustomUser
+        fields = (
+            'username',
+            'first_name',
+            'last_name',
+            'email',
+            'descriptions',
+            'birth_date',
+            'banner_url'
+        )
+        # Исключаем поля пароля и score (так как score не должен редактироваться вручную)
+        exclude = ('password', 'score', 'last_login', 'is_superuser', 
+                  'is_staff', 'is_active', 'date_joined', 'groups', 
+                  'user_permissions')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Дополнительные настройки полей
+        self.fields['username'].widget.attrs.update({'class': 'form-control'})
+        self.fields['first_name'].widget.attrs.update({'class': 'form-control'})
+        self.fields['last_name'].widget.attrs.update({'class': 'form-control'})
+        self.fields['email'].widget.attrs.update({'class': 'form-control'})
+        
+        # Делаем email обязательным
+        self.fields['email'].required = True

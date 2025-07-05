@@ -226,7 +226,6 @@
             height: 133px;
             border-radius: 50%;
             border: 4px solid var(--bg-color);
-            background-color: #333;
         }
 
         .edit-btn {
@@ -693,7 +692,6 @@
         </a>
         
         <div class="profile-mini">
-            <img src="https://via.placeholder.com/40" alt="Profile">
             <div class="info">
                 <div class="name">{{ user.first_name }} {{ user.last_name }}</div>
                 <div class="username">@{{ user.username }}</div>
@@ -711,12 +709,16 @@
             
             <div class="profile-header">
                 <div class="banner-container">
-                    <img src="https://i.pinimg.com/736x/af/ad/c7/afadc7d79828c6d1d52a90867d685d55.jpg" alt="Баннер профиля" class="banner-image">
+                    <img src="{{ user.banner_url }}" alt="Баннер профиля" class="banner-image">
                 </div>
                 <div class="profile-info">
                     <div class="avatar-container">
                         <div class="avatar"></div>
-                        <button class="edit-btn">Редактировать профиль</button>
+                        {% if request.user == user %}
+                           
+                                <button class="edit-btn"><a href="{% url 'user:edit' %}">Редактировать профиль</a></button>
+                            
+                        {% endif %}
                     </div>
                     
                     <div class="user-details">

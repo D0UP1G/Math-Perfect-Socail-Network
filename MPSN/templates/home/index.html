@@ -305,6 +305,67 @@
             padding: 20px;
         }
 
+        /* Стили для Markdown */
+        .markdown-content h1, 
+        .markdown-content h2, 
+        .markdown-content h3, 
+        .markdown-content h4, 
+        .markdown-content h5, 
+        .markdown-content h6 {
+            margin: 1em 0 0.5em 0;
+            line-height: 1.2;
+        }
+
+        .markdown-content p {
+            margin-bottom: 1em;
+        }
+
+        .markdown-content ul, 
+        .markdown-content ol {
+            margin-bottom: 1em;
+            padding-left: 2em;
+        }
+
+        .markdown-content blockquote {
+            border-left: 4px solid var(--primary-color);
+            padding-left: 1em;
+            margin-left: 0;
+            color: var(--secondary-color);
+            font-style: italic;
+        }
+
+        .markdown-content pre {
+            background-color: var(--hover-color);
+            padding: 1em;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-bottom: 1em;
+        }
+
+        .markdown-content code {
+            font-family: monospace;
+            background-color: var(--hover-color);
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        .markdown-content a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .markdown-content a:hover {
+            text-decoration: underline;
+        }
+
+        .markdown-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 0.5em 0;
+        }
+
         /* Кнопка меню для мобильных */
         .menu-toggle {
             display: none;
@@ -412,60 +473,52 @@
         <div class="logo">
             <i class="fab fa-x-twitter"></i>
         </div>
-        <a href="#">
+        <a href="{% url 'misc:home' %}">
             <div class="nav-item">
                 <i class="fas fa-home"></i>
                 <span>Главная</span>
             </div>
         </a>
-        <a href="#">
+        <a href="{% url 'misc:leaderboard' %}">
             <div class="nav-item">
                 <i class="fas fa-trophy"></i>
                 <span>Лидерборд</span>
             </div>
         </a>
-        <a href="#">
+        <a href="{% url 'user:profile' request.user %}">
             <div class="nav-item">
                 <i class="fas fa-user"></i>
                 <span>Профиль</span>
             </div>
         </a>
-        <a href="#">
+        <a href="{% url 'posts:create' %}">
             <button class="tweet-btn">
                 <span>Опубликовать</span>
             </button>
         </a>
         <div class="profile-mini">
-            <img src="https://via.placeholder.com/40" alt="Profile">
             <div class="info">
-                <div class="name">Иван Иванов</div>
-                <div class="username">@ivan_ivanov</div>
+                <div class="name">{{ request.user.get_full_name }}</div>
+                <div class="username">@{{ request.user.username }}</div>
             </div>
         </div>
     </div>
 
     <div class="main-content" id="mainContent">
-        <div class="header">
-            <div class="logo-text">X</div>
-            <div class="profile-icon">
-                <i class="fas fa-user"></i>
-            </div>
-        </div>
-
         <div class="post-container">
             <div class="post" data-post-id="{{ post.id }}">
                 <div class="post-header">
                     <div class="post-avatar"></div>
                     <div>
-                        <div class="post-author">Иван Иванов</div>
-                        <div class="post-username">@ivan_ivanov · 2 ч</div>
+                        <div class="post-author">{{ post.created_by.get_full_name }}</div>
+                        <div class="post-username">@{{ post.created_by.username }}</div>
                     </div>
                 </div>
                 
-                <h3 class="post-title">Пример поста</h3>
+                <h3 class="post-title">{{ post.title }}</h3>
                 
-                <div class="post-text" id="markdown-content">
-                    Это пример текста поста. Здесь может быть много текста, который будет обрезан, если он слишком длинный.
+                <div class="post-text markdown-content" id="markdown-content">
+                    <!-- Содержимое будет заменено через JavaScript -->
                 </div>
                 <div class="post-actions">
                     <div class="action-btn skip">
@@ -491,6 +544,42 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Конвертация Markdown в HTML
+            const markdownContent = document.getElementById('markdown-content');
+            const markdownText = `{{ post.description|escapejs }}`;
+            
+            // Настройки marked.js
+            marked.setOptions({
+                breaks: true,
+                gfm: true,
+                highlight: function(code, lang) {
+                    if (window.hljs) {
+                        const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+                        return hljs.highlight(code, { language }).value;
+                    }
+                    return code;
+                }
+            });
+            
+            // Преобразование Markdown в HTML
+            markdownContent.innerHTML = marked.parse(markdownText);
+            
+            // Добавляем обработчик для "читать далее"
+            const postText = document.querySelector('.post-text');
+            const contentHeight = postText.scrollHeight;
+            
+            if (contentHeight > 300) {
+                const readMore = document.createElement('div');
+                readMore.className = 'read-more';
+                readMore.textContent = 'Читать далее...';
+                postText.appendChild(readMore);
+                
+                readMore.addEventListener('click', function() {
+                    postText.classList.add('expanded');
+                    readMore.style.display = 'none';
+                });
+            }
+            
             // Получаем элементы
             const skipBtn = document.querySelector('.action-btn.skip');
             const likeBtn = document.querySelector('.action-btn.like');
@@ -571,7 +660,7 @@
                     },
                     body: JSON.stringify({
                         // Здесь можно добавить дополнительные данные, например сумму доната
-                        amount: 10
+                        amount: 5
                     })
                 })
                 .then(response => {

@@ -46,3 +46,15 @@ def profile_view(request, username):
     if len(posts) > 5:
         posts = posts[0:4]
     return render(request, 'profile/index.html', {'user':user, 'request': request, 'posts': posts})
+
+@login_required
+def edit_profile(request):
+    if request.method == 'POST':
+        form = CustomUserEditForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('user:profile', username=request.user.username)  # Замените на ваш URL профиля
+    else:
+        form = CustomUserEditForm(instance=request.user)
+    
+    return render(request, 'profile/edit.html', {'form': form})
