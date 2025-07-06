@@ -3,3 +3,8 @@
 <h3 align="center">
 <img align="center" width="80%" src=https://i.ibb.co/fzBNCQVx/banner.png style="border-radius:5%" />
 </h3>
+
+# MPSN
+**Платформа для публикации** своих идея, мыслей, наработок и поиска соискателей.
+
+
