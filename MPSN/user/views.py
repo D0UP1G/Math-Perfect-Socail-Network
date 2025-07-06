@@ -37,6 +37,8 @@ def register_view(request):
             user = form.save()
             login(request, user)  # Автоматический вход после регистрации
             return redirect('user:profile', username=user.username )
+        else:
+            return render(request, 'user/register.html', {'form': form})
     else:
         form = CustomUserCreationForm()
     return render(request, 'user/register.html', {'form': form})
