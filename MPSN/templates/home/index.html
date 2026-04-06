@@ -1,714 +1,345 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Главная | X.com</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        }
+{% extends 'base.html' %}
+{% block title %}Главная — Doupig{% endblock %}
+{% block nav_home %}active{% endblock %}
 
-        :root {
-            --bg-color: #000000;
-            --text-color: #ffffff;
-            --border-color: #2f3336;
-            --hover-color: #181818;
-            --primary-color: #1d9bf0;
-            --secondary-color: #71767b;
-            --container-color: #16181c;
-            --gold-color: #FFD700;
-        }
+{% block extra_css %}
+.feed { max-width: 640px; margin: 0 auto; }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            min-height: 100vh;
-            display: flex;
-        }
+/* ── Compose box ── */
+[data-theme="light"] .compose-box {
+    background: var(--card); border-radius: 16px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+    margin: 12px 16px 4px; padding: 16px;
+}
+[data-theme="dark"] .compose-box {
+    border-bottom: 1px solid var(--border); padding: 16px;
+}
+.compose-top { display: flex; gap: 12px; align-items: flex-start; }
+.compose-avatar {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: var(--card2); flex-shrink: 0; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; color: var(--muted); border: 1px solid var(--border);
+}
+.compose-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.compose-fields { flex: 1; min-width: 0; }
+.compose-title {
+    width: 100%; background: transparent; border: none;
+    color: var(--text); font-size: 16px; font-weight: 500;
+    font-family: inherit; padding: 6px 0; margin-bottom: 0;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s; outline: none;
+}
+.compose-title::placeholder { color: var(--muted); font-weight: 400; }
+.compose-title:focus { border-bottom-color: var(--border); }
+.compose-body-wrap { display: none; margin-top: 10px; }
+.compose-box.expanded .compose-body-wrap { display: block; }
+.compose-textarea {
+    width: 100%; background: transparent; border: none;
+    color: var(--text2); font-size: 14px; font-family: inherit;
+    resize: none; min-height: 72px; outline: none; line-height: 1.6; padding: 0;
+}
+.compose-textarea::placeholder { color: var(--muted); }
+.compose-img-preview {
+    width: 100%; border-radius: 12px; margin-top: 10px;
+    max-height: 260px; object-fit: cover; display: none;
+}
+.compose-footer {
+    display: flex; align-items: center; gap: 4px;
+    margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border);
+}
+.compose-tool {
+    display: flex; align-items: center; justify-content: center;
+    width: 34px; height: 34px; border-radius: 50%;
+    border: none; background: none; cursor: pointer;
+    color: var(--muted); font-size: 15px;
+    transition: background 0.12s, color 0.12s;
+}
+.compose-tool:hover { background: var(--blue-soft); color: var(--blue); }
+.compose-char { font-size: 12px; color: var(--muted); margin-right: 4px; }
+.compose-char.over { color: var(--pink); }
+.compose-submit {
+    margin-left: auto; background: var(--text); color: var(--bg);
+    border: none; border-radius: 50px; padding: 8px 20px;
+    font-size: 14px; font-weight: 700; cursor: pointer;
+    transition: opacity 0.15s; font-family: inherit;
+}
+.compose-submit:hover { opacity: 0.85; }
+[data-theme="light"] .compose-submit { background: #1a1a1a; color: #fff; }
+.compose-submit:disabled { opacity: 0.35; cursor: not-allowed; }
 
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
+/* ── Post cards ── */
+[data-theme="light"] .post-card {
+    background: var(--card); border-radius: 16px; border: none;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+    margin: 10px 16px; padding: 16px;
+}
+[data-theme="light"] .post-card:hover { box-shadow: 0 3px 14px rgba(0,0,0,0.11); }
+[data-theme="light"] .feed { padding: 8px 0; }
+[data-theme="dark"] .post-card { border-bottom: 1px solid var(--border); padding: 16px; }
+[data-theme="dark"] .post-card:hover { background: var(--hover); }
 
-        /* Стили для сайдбара */
-        .sidebar {
-            width: 275px;
-            padding: 8px 12px;
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid var(--border-color);
-            transition: all 0.3s ease;
-            z-index: 100;
-            background-color: var(--bg-color);
-            overflow-y: auto;
-        }
+.post-card {
+    display: flex; gap: 12px;
+    transition: background 0.12s, box-shadow 0.12s;
+    cursor: pointer; color: inherit; text-decoration: none;
+}
+.post-card.pinned { background: var(--blue-soft) !important; }
+.post-avatar {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: var(--card2); flex-shrink: 0; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; color: var(--muted); border: 1px solid var(--border);
+}
+.post-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.post-body { flex: 1; min-width: 0; }
+.post-meta-row { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; flex-wrap: wrap; }
+.post-author { font-weight: 600; font-size: 14px; color: var(--text); }
+.post-author:hover { text-decoration: underline; }
+.post-username { color: var(--muted); font-size: 13px; }
+.post-date { color: var(--muted); font-size: 12px; }
+.pin-icon { color: var(--blue); font-size: 11px; }
+.post-title { font-size: 15px; font-weight: 600; margin-bottom: 8px; line-height: 1.4; }
+.post-thumb { width: 100%; border-radius: 12px; margin-bottom: 10px; max-height: 320px; object-fit: cover; display: block; }
+.post-actions { display: flex; gap: 2px; margin-top: 4px; }
+.act-btn {
+    display: flex; align-items: center; gap: 5px;
+    color: var(--muted); font-size: 13px; padding: 5px 10px; border-radius: 50px;
+    border: none; background: none; cursor: pointer;
+    transition: background 0.12s, color 0.12s; font-weight: 500;
+}
+.act-btn:hover { background: var(--blue-soft); color: var(--blue); }
+.act-btn.liked { color: var(--pink); }
+.act-btn.liked:hover { background: rgba(249,24,128,0.1); color: var(--pink); }
+.act-btn i { font-size: 14px; }
 
-        .logo {
-            padding: 12px;
-            margin-bottom: 8px;
-        }
+#sentinel { height: 1px; }
+.feed-loader { display: none; justify-content: center; padding: 24px; }
+.feed-loader.active { display: flex; }
+.spinner { width: 26px; height: 26px; border: 3px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.feed-end { text-align: center; color: var(--muted); padding: 28px; font-size: 13px; display: none; }
+.feed-end.visible { display: block; }
+.empty-feed { text-align: center; color: var(--muted); padding: 60px 20px; }
+.empty-feed i { font-size: 40px; display: block; margin-bottom: 12px; }
+{% endblock %}
 
-        .logo i {
-            font-size: 28px;
-            color: var(--text-color);
-        }
+{% block content %}
+<div class="page-header">
+    <h1>Лента</h1>
+</div>
 
-        .nav-item {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            margin: 4px 0;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 20px;
-            font-weight: 500;
-            transition: background-color 0.2s;
-            white-space: nowrap;
-        }
+<div class="feed" id="feed">
 
-        .nav-item:hover {
-            background-color: var(--hover-color);
-        }
+    <!-- ── Форма создания поста ── -->
+    <div class="compose-box" id="composeBox">
+        <form method="post" enctype="multipart/form-data" id="composeForm">
+            {% csrf_token %}
+            <div class="compose-top">
+                <div class="compose-avatar">
+                    {% if request.user.avatar %}
+                    <img src="{{ request.user.avatar.url }}" alt="">
+                    {% else %}<i class="fas fa-user"></i>{% endif %}
+                </div>
+                <div class="compose-fields">
+                    <input type="text" name="title" id="composeTitle"
+                           class="compose-title" placeholder="Что нового?"
+                           maxlength="128" autocomplete="off">
+                    <div class="compose-body-wrap">
+                        <textarea name="description" id="composeTextarea"
+                                  class="compose-textarea"
+                                  placeholder="Расскажите подробнее..."></textarea>
+                        <img id="composeImgPreview" class="compose-img-preview" alt="">
+                    </div>
+                </div>
+            </div>
+            <div class="compose-footer">
+                <label class="compose-tool" title="Прикрепить изображение">
+                    <i class="fas fa-image"></i>
+                    <input type="file" name="image" id="composeImage"
+                           accept="image/*" style="display:none">
+                </label>
+                <span class="compose-char" id="composeChar"></span>
+                <button type="submit" class="compose-submit" id="composeSubmit" disabled>
+                    Опубликовать
+                </button>
+            </div>
+        </form>
+    </div>
 
-        .nav-item i {
-            margin-right: 16px;
-            width: 26px;
-            text-align: center;
-            flex-shrink: 0;
-        }
-
-        .nav-item.active {
-            font-weight: 700;
-            background-color: var(--hover-color);
-        }
-
-        .tweet-btn {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            padding: 16px;
-            font-size: 17px;
-            font-weight: 700;
-            margin-top: 16px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            width: 100%;
-            text-align: center;
-        }
-
-        .tweet-btn:hover {
-            background-color: #1a8cd8;
-        }
-
-        .profile-mini {
-            display: flex;
-            align-items: center;
-            margin-top: auto;
-            padding: 12px;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            margin-bottom: 20px;
-        }
-
-        .profile-mini:hover {
-            background-color: var(--hover-color);
-        }
-
-        .profile-mini img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 12px;
-            flex-shrink: 0;
-        }
-
-        .profile-mini .info {
-            flex-grow: 1;
-            overflow: hidden;
-        }
-
-        .profile-mini .name {
-            font-weight: 700;
-            font-size: 15px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .profile-mini .username {
-            color: var(--secondary-color);
-            font-size: 15px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* Основное содержимое */
-        .main-content {
-            margin-left: 275px;
-            width: calc(100% - 275px);
-            min-height: 100vh;
-            transition: all 0.3s ease;
-        }
-
-        .header {
-            position: sticky;
-            top: 0;
-            background-color: rgba(0, 0, 0, 0.65);
-            backdrop-filter: blur(12px);
-            z-index: 10;
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo-text {
-            font-size: 28px;
-            color: var(--text-color);
-        }
-
-        .profile-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background-color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-
-        .post-container {
-            padding: 20px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .post {
-            background-color: var(--container-color);
-            border-radius: 16px;
-            border: 1px solid var(--border-color);
-            width: 100%;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            margin-bottom: 20px;
-        }
-
-        .post-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .post-avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background-color: #333;
-            margin-right: 12px;
-        }
-
-        .post-author {
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .post-username {
-            color: var(--secondary-color);
-            font-size: 14px;
-        }
-
-        .post-title {
-            font-size: 20px;
-            font-weight: 800;
-            margin-bottom: 15px;
-            line-height: 1.4;
-        }
-
-        .post-text {
-            margin-bottom: 20px;
-            line-height: 1.5;
-            color: var(--text-color);
-            max-height: 300px;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .post-text.expanded {
-            max-height: none;
-        }
-        
-        .read-more {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            background: linear-gradient(to right, transparent, var(--container-color) 50%);
-            padding: 5px 10px;
-            color: var(--primary-color);
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .post-actions {
-            display: flex;
-            justify-content: space-around;
-            border-top: 1px solid var(--border-color);
-            padding-top: 15px;
-        }
-
-        .action-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: var(--secondary-color);
-            cursor: pointer;
-            transition: color 0.2s;
-            padding: 8px 15px;
-            border-radius: 8px;
-        }
-
-        .action-btn:hover {
-            background-color: var(--hover-color);
-        }
-
-        .action-btn i {
-            font-size: 20px;
-            margin-bottom: 5px;
-        }
-
-        .action-btn.like.active {
-            color: #f91880;
-        }
-
-        .action-btn.donate.active {
-            color: var(--gold-color);
-        }
-
-        .no-more-posts {
-            text-align: center;
-            color: var(--secondary-color);
-            padding: 20px;
-        }
-
-        /* Стили для Markdown */
-        .markdown-content h1, 
-        .markdown-content h2, 
-        .markdown-content h3, 
-        .markdown-content h4, 
-        .markdown-content h5, 
-        .markdown-content h6 {
-            margin: 1em 0 0.5em 0;
-            line-height: 1.2;
-        }
-
-        .markdown-content p {
-            margin-bottom: 1em;
-        }
-
-        .markdown-content ul, 
-        .markdown-content ol {
-            margin-bottom: 1em;
-            padding-left: 2em;
-        }
-
-        .markdown-content blockquote {
-            border-left: 4px solid var(--primary-color);
-            padding-left: 1em;
-            margin-left: 0;
-            color: var(--secondary-color);
-            font-style: italic;
-        }
-
-        .markdown-content pre {
-            background-color: var(--hover-color);
-            padding: 1em;
-            border-radius: 8px;
-            overflow-x: auto;
-            margin-bottom: 1em;
-        }
-
-        .markdown-content code {
-            font-family: monospace;
-            background-color: var(--hover-color);
-            padding: 0.2em 0.4em;
-            border-radius: 4px;
-            font-size: 0.9em;
-        }
-
-        .markdown-content a {
-            color: var(--primary-color);
-            text-decoration: none;
-        }
-
-        .markdown-content a:hover {
-            text-decoration: underline;
-        }
-
-        .markdown-content img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-            margin: 0.5em 0;
-        }
-
-        /* Кнопка меню для мобильных */
-        .menu-toggle {
-            display: none;
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            z-index: 1000;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            font-size: 20px;
-            cursor: pointer;
-        }
-
-        /* Медиазапросы для адаптивности */
-        @media (max-width: 1280px) {
-            .sidebar {
-                width: 88px;
-                align-items: center;
-                padding: 8px;
-            }
-            
-            .nav-item {
-                width: 50px;
-                height: 50px;
-                padding: 0;
-                justify-content: center;
-            }
-            
-            .nav-item span {
-                display: none;
-            }
-            
-            .nav-item i {
-                margin-right: 0;
-                font-size: 24px;
-            }
-            
-            .tweet-btn {
-                width: 50px;
-                height: 50px;
-                padding: 0;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-            
-            .tweet-btn span {
-                display: none;
-            }
-            
-            .profile-mini {
-                width: 50px;
-                height: 50px;
-                padding: 0;
-                justify-content: center;
-            }
-            
-            .profile-mini .info {
-                display: none;
-            }
-            
-            .profile-mini img {
-                margin-right: 0;
-            }
-            
-            .main-content {
-                margin-left: 88px;
-                width: calc(100% - 88px);
-            }
-        }
-
-        @media (max-width: 500px) {
-            .sidebar {
-                transform: translateX(-100%);
-                width: 275px;
-            }
-            
-            .sidebar.active {
-                transform: translateX(0);
-            }
-            
-            .main-content {
-                margin-left: 0;
-                width: 100%;
-            }
-            
-            .menu-toggle {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-        }
-    </style>
-</head>
-<body>
-    <button class="menu-toggle" id="menuToggle">
-        <i class="fas fa-bars"></i>
-    </button>
-
-    <div class="sidebar" id="sidebar">
-        <div class="logo">
-            <i class="fab fa-x-twitter"></i>
-        </div>
-        <a href="{% url 'misc:home' %}">
-            <div class="nav-item">
-                <i class="fas fa-home"></i>
-                <span>Главная</span>
+    <!-- ── Посты ── -->
+    {% for post in posts %}
+    <div class="post-card {% if post.is_pinned %}pinned{% endif %}"
+         onclick="location.href='{% url 'posts:detail' post.pk %}'">
+        <a href="{% url 'user:profile' post.created_by.username %}" onclick="event.stopPropagation()">
+            <div class="post-avatar">
+                {% if post.created_by.avatar %}<img src="{{ post.created_by.avatar.url }}" alt="">
+                {% else %}<i class="fas fa-user"></i>{% endif %}
             </div>
         </a>
-        <a href="{% url 'misc:leaderboard' %}">
-            <div class="nav-item">
-                <i class="fas fa-trophy"></i>
-                <span>Лидерборд</span>
+        <div class="post-body">
+            <div class="post-meta-row">
+                <a href="{% url 'user:profile' post.created_by.username %}"
+                   onclick="event.stopPropagation()" class="post-author">
+                    {{ post.created_by.get_full_name|default:post.created_by.username }}
+                </a>
+                <span class="post-username">@{{ post.created_by.username }}</span>
+                <span class="post-date">· {{ post.created }}</span>
+                {% if post.is_pinned %}<span class="pin-icon"><i class="fas fa-thumbtack"></i></span>{% endif %}
             </div>
-        </a>
-        <a href="{% url 'user:profile' request.user %}">
-            <div class="nav-item">
-                <i class="fas fa-user"></i>
-                <span>Профиль</span>
-            </div>
-        </a>
-        <a href="{% url 'posts:create' %}">
-            <button class="tweet-btn">
-                <span>Опубликовать</span>
-            </button>
-        </a>
-        <div class="profile-mini">
-            <div class="info">
-                <div class="name">{{ request.user.get_full_name }}</div>
-                <a href="{% url 'user:logout' %}"><div class="username">Выход</div></a>
+            <div class="post-title">{{ post.title }}</div>
+            {% if post.image %}<img src="{{ post.image.url }}" class="post-thumb" alt="{{ post.title }}">{% endif %}
+            <div class="post-actions" onclick="event.stopPropagation()">
+                <button class="act-btn" onclick="location.href='{% url 'posts:detail' post.pk %}#comments'">
+                    <i class="far fa-comment"></i><span>{{ post.comments.count }}</span>
+                </button>
+                <button class="act-btn like-btn {% if request.user in post.likes.all %}liked{% endif %}"
+                        data-pk="{{ post.pk }}"
+                        data-liked="{% if request.user in post.likes.all %}1{% else %}0{% endif %}">
+                    <i class="{% if request.user in post.likes.all %}fas{% else %}far{% endif %} fa-heart"></i>
+                    <span class="like-count">{{ post.likes.count }}</span>
+                </button>
             </div>
         </div>
     </div>
-
-    <div class="main-content" id="mainContent">
-        <div class="post-container">
-            <div class="post" data-post-id="{{ post.id }}">
-                <div class="post-header">
-                    <div class="post-avatar"></div>
-                    <div>
-                        <div class="post-author">{{ post.created_by.get_full_name }}</div>
-                        <div class="post-username">@{{ post.created_by.username }}</div>
-                    </div>
-                </div>
-                
-                <h3 class="post-title">{{ post.title }}</h3>
-                
-                <div class="post-text markdown-content" id="markdown-content">
-                    <!-- Содержимое будет заменено через JavaScript -->
-                </div>
-                <div class="post-actions">
-                    <div class="action-btn skip">
-                        <i class="fas fa-forward"></i>
-                        <span>Пропустить</span>
-                    </div>
-                    <div class="action-btn like">
-                        <i class="far fa-heart"></i>
-                        <span>Лайк</span>
-                    </div>
-                    <div class="action-btn donate">
-                        <i class="fas fa-coins"></i>
-                        <span>Оценить</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="no-more-posts">
-                Это единственный пост на странице. Прокрутка отключена.
-            </div>
-        </div>
+    {% empty %}
+    <div class="empty-feed">
+        <i class="fas fa-layer-group"></i>
+        Постов пока нет. Напишите первый!
     </div>
+    {% endfor %}
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Конвертация Markdown в HTML
-            const markdownContent = document.getElementById('markdown-content');
-            const markdownText = `{{ post.description|escapejs }}`;
-            
-            // Настройки marked.js
-            marked.setOptions({
-                breaks: true,
-                gfm: true,
-                highlight: function(code, lang) {
-                    if (window.hljs) {
-                        const language = hljs.getLanguage(lang) ? lang : 'plaintext';
-                        return hljs.highlight(code, { language }).value;
-                    }
-                    return code;
-                }
-            });
-            
-            // Преобразование Markdown в HTML
-            markdownContent.innerHTML = marked.parse(markdownText);
-            
-            // Добавляем обработчик для "читать далее"
-            const postText = document.querySelector('.post-text');
-            const contentHeight = postText.scrollHeight;
-            
-            if (contentHeight > 300) {
-                const readMore = document.createElement('div');
-                readMore.className = 'read-more';
-                readMore.textContent = 'Читать далее...';
-                postText.appendChild(readMore);
-                
-                readMore.addEventListener('click', function() {
-                    postText.classList.add('expanded');
-                    readMore.style.display = 'none';
-                });
-            }
-            
-            // Получаем элементы
-            const skipBtn = document.querySelector('.action-btn.skip');
-            const likeBtn = document.querySelector('.action-btn.like');
-            const donateBtn = document.querySelector('.action-btn.donate');
-            const postContainer = document.querySelector('.post');
-            const postId = {{ post.pk }};
-            
-            // Функция для получения CSRF токена (необходимо для Django)
-            function getCSRFToken() {
-                let cookieValue = null;
-                if (document.cookie && document.cookie !== '') {
-                    const cookies = document.cookie.split(';');
-                    for (let i = 0; i < cookies.length; i++) {
-                        const cookie = cookies[i].trim();
-                        if (cookie.substring(0, 10) === ('csrftoken=')) {
-                            cookieValue = decodeURIComponent(cookie.substring(10));
-                            break;
-                        }
-                    }
-                }
-                return cookieValue;
-            }
+    <div id="sentinel"></div>
+    <div class="feed-loader" id="loader"><div class="spinner"></div></div>
+    <div class="feed-end" id="feedEnd">Вы посмотрели все посты</div>
+</div>
+{% endblock %}
 
-            // Обработка кнопки "Пропустить"
-            skipBtn.addEventListener('click', function() {
-                location.reload();
-            });
+{% block extra_js %}
+// ── Compose form ──────────────────────────────────────────────────
+const composeBox   = document.getElementById('composeBox');
+const composeTitle = document.getElementById('composeTitle');
+const composeTA    = document.getElementById('composeTextarea');
+const composeChar  = document.getElementById('composeChar');
+const composeBtn   = document.getElementById('composeSubmit');
+const composeImg   = document.getElementById('composeImage');
+const composePreview = document.getElementById('composeImgPreview');
 
-            // Обработка кнопки "Лайк"
-            likeBtn.addEventListener('click', function() {
-                const isActive = this.classList.contains('active');
-                const action = isActive ? '2' : '1'; // 1 - лайк, 2 - анлайк
-                
-                // Формируем URL
-                const url = `{% url "posts:api" post.pk 1 %}`;
-                
-                // Отправляем GET запрос
-                fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                })
-                .then(response => {
-                    if (response.ok) {
-                        // Обновляем UI
-                        this.classList.toggle('active');
-                        const icon = this.querySelector('i');
-                        
-                        if (this.classList.contains('active')) {
-                            icon.classList.remove('far');
-                            icon.classList.add('fas');
-                            icon.style.color = '#f91880';
-                        } else {
-                            icon.classList.remove('fas');
-                            icon.classList.add('far');
-                            icon.style.color = '';
-                        }
-                    } else {
-                        console.error('Ошибка при отправке лайка');
-                    }
-                })
-                .catch(error => {
-                    console.error('Ошибка сети:', error);
-                });
-            });
+// Раскрываем форму при фокусе на заголовке
+composeTitle.addEventListener('focus', () => composeBox.classList.add('expanded'));
 
-            // Обработка кнопки "Донат"
-            donateBtn.addEventListener('click', function() {
-                const url = `{% url "posts:api_score" post.pk %}`;
-                
-                // Отправляем POST запрос
-                fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCSRFToken() // Для Django CSRF защиты
-                    },
-                    body: JSON.stringify({
-                        // Здесь можно добавить дополнительные данные, например сумму доната
-                        amount: 5
-                    })
-                })
-                .then(response => {
-                    if (response.ok) {
-                        // Обновляем UI
-                        this.classList.add('active');
-                        const icon = this.querySelector('i');
-                        icon.style.color = '#FFD700';
-                        
-                        // Показываем сообщение об успехе
-                        alert('Донат успешно отправлен!');
-                    } else {
-                        console.error('Ошибка при отправке доната');
-                        alert('Произошла ошибка при отправке доната');
-                    }
-                })
-                .catch(error => {
-                    console.error('Ошибка сети:', error);
-                    alert('Сетевая ошибка при отправке доната');
-                });
-            });
+function updateCompose() {
+    const titleLen = composeTitle.value.trim().length;
+    const bodyLen  = composeTA.value.length;
+    composeBtn.disabled = titleLen === 0;
+    if (bodyLen > 0) {
+        composeChar.textContent = bodyLen + ' / 8128';
+        composeChar.className = 'compose-char' + (bodyLen > 8128 ? ' over' : '');
+    } else {
+        composeChar.textContent = '';
+    }
+}
+composeTitle.addEventListener('input', updateCompose);
+composeTA.addEventListener('input', updateCompose);
 
-            // Адаптивное меню
-            const menuToggle = document.getElementById('menuToggle');
-            const sidebar = document.getElementById('sidebar');
-            
-            function checkScreenSize() {
-                if (window.innerWidth <= 500) {
-                    menuToggle.style.display = 'flex';
-                    sidebar.classList.remove('active');
-                } else if (window.innerWidth <= 1280) {
-                    menuToggle.style.display = 'none';
-                    sidebar.style.width = '88px';
-                    sidebar.style.padding = '8px';
-                } else {
-                    menuToggle.style.display = 'none';
-                    sidebar.style.width = '275px';
-                    sidebar.style.padding = '8px 12px';
-                }
-            }
-            
-            menuToggle.addEventListener('click', function() {
-                sidebar.classList.toggle('active');
-            });
-            
-            checkScreenSize();
-            window.addEventListener('resize', checkScreenSize);
+// Превью изображения
+composeImg.addEventListener('change', function() {
+    const file = this.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+        composePreview.src = e.target.result;
+        composePreview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+});
+
+// Закрыть форму при клике вне
+document.addEventListener('click', e => {
+    if (!composeBox.contains(e.target) && composeTitle.value === '' && composeTA.value === '') {
+        composeBox.classList.remove('expanded');
+    }
+});
+
+// ── Like handler ──────────────────────────────────────────────────
+function getCookie(name) {
+    const v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+    return v ? v[2] : null;
+}
+
+document.getElementById('feed').addEventListener('click', function(e) {
+    const btn = e.target.closest('.like-btn');
+    if (!btn) return;
+    e.stopPropagation();
+    const pk = btn.dataset.pk;
+    const liked = btn.dataset.liked === '1';
+    fetch(`/api/${pk}/${liked ? '2' : '1'}/`)
+        .then(r => r.json())
+        .then(data => {
+            if (!data.success) return;
+            btn.dataset.liked = data.is_liked ? '1' : '0';
+            btn.classList.toggle('liked', data.is_liked);
+            btn.querySelector('i').className = data.is_liked ? 'fas fa-heart' : 'far fa-heart';
+            btn.querySelector('.like-count').textContent = data.likes_count;
         });
-    </script>
-</body>
-</html>
+});
+
+// ── Infinite scroll ───────────────────────────────────────────────
+let nextPage = {{ posts.has_next|yesno:"2,null" }};
+let loading = false;
+
+function buildCard(p) {
+    const pinned = p.is_pinned ? 'pinned' : '';
+    const pinIcon = p.is_pinned ? '<span class="pin-icon"><i class="fas fa-thumbtack"></i></span>' : '';
+    const avatar = p.author_avatar ? `<img src="${p.author_avatar}" alt="">` : `<i class="fas fa-user"></i>`;
+    const thumb = p.image ? `<img src="${p.image}" class="post-thumb" alt="">` : '';
+    const likedClass = p.user_liked ? 'liked' : '';
+    const heartIcon = p.user_liked ? 'fas fa-heart' : 'far fa-heart';
+    return `
+    <div class="post-card ${pinned}" onclick="location.href='/post/${p.pk}/'">
+        <a href="/profile/${p.author_username}/" onclick="event.stopPropagation()">
+            <div class="post-avatar">${avatar}</div>
+        </a>
+        <div class="post-body">
+            <div class="post-meta-row">
+                <a href="/profile/${p.author_username}/" onclick="event.stopPropagation()" class="post-author">${p.author_name}</a>
+                <span class="post-username">@${p.author_username}</span>
+                <span class="post-date">· ${p.created}</span>
+                ${pinIcon}
+            </div>
+            <div class="post-title">${p.title}</div>
+            ${thumb}
+            <div class="post-actions" onclick="event.stopPropagation()">
+                <button class="act-btn" onclick="location.href='/post/${p.pk}/#comments'">
+                    <i class="far fa-comment"></i><span>${p.comments_count}</span>
+                </button>
+                <button class="act-btn like-btn ${likedClass}" data-pk="${p.pk}" data-liked="${p.user_liked ? '1' : '0'}">
+                    <i class="${heartIcon}"></i><span class="like-count">${p.likes_count}</span>
+                </button>
+            </div>
+        </div>
+    </div>`;
+}
+
+function loadMore() {
+    if (loading || !nextPage) return;
+    loading = true;
+    document.getElementById('loader').classList.add('active');
+    fetch(`/api/feed/?page=${nextPage}`)
+        .then(r => r.json())
+        .then(data => {
+            const sentinel = document.getElementById('sentinel');
+            data.items.forEach(p => sentinel.insertAdjacentHTML('beforebegin', buildCard(p)));
+            nextPage = data.has_next ? data.next_page : null;
+            if (!nextPage) document.getElementById('feedEnd').classList.add('visible');
+        })
+        .finally(() => {
+            loading = false;
+            document.getElementById('loader').classList.remove('active');
+        });
+}
+
+new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) loadMore();
+}, { rootMargin: '200px' }).observe(document.getElementById('sentinel'));
+{% endblock %}

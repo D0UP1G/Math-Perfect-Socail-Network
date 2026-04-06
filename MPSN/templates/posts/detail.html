@@ -1,0 +1,462 @@
+{% extends 'base.html' %}
+{% block title %}{{ post.title }} — Doupig{% endblock %}
+
+{% block extra_css %}
+.detail-wrap { max-width: 700px; margin: 0 auto; padding: 0 0 40px; }
+
+[data-theme="light"] .post-section {
+    background: var(--card); border-radius: 16px;
+    margin: 12px 16px; padding: 20px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+}
+[data-theme="dark"] .post-section { padding: 20px 16px; border-bottom: 1px solid var(--border); }
+
+.post-author-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.post-ava {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: var(--card2); overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; color: var(--muted); flex-shrink: 0;
+    border: 1px solid var(--border);
+}
+.post-ava img { width: 100%; height: 100%; object-fit: cover; }
+.post-author-name { font-weight: 600; font-size: 14px; }
+.post-author-user { color: var(--muted); font-size: 12px; }
+.post-date { color: var(--muted); font-size: 12px; margin-left: auto; }
+
+.post-title { font-size: 20px; font-weight: 700; margin-bottom: 14px; line-height: 1.3; }
+.post-image { width: 100%; border-radius: 12px; margin-bottom: 16px; max-height: 500px; object-fit: cover; }
+
+.post-content { line-height: 1.7; font-size: 15px; margin-bottom: 16px; color: var(--text2); }
+.post-content h1,.post-content h2,.post-content h3 { margin: 1em 0 0.5em; color: var(--text); }
+.post-content p { margin-bottom: 0.8em; }
+.post-content ul,.post-content ol { padding-left: 1.5em; margin-bottom: 0.8em; }
+.post-content blockquote { border-left: 3px solid var(--blue); padding-left: 12px; color: var(--muted); margin: 0.8em 0; font-style: italic; }
+.post-content pre { background: var(--card2); padding: 12px; border-radius: 10px; overflow-x: auto; margin: 0.8em 0; }
+.post-content code { font-family: monospace; background: var(--card2); padding: 2px 5px; border-radius: 4px; font-size: 0.9em; }
+.post-content img { max-width: 100%; border-radius: 10px; }
+.post-content a { color: var(--blue); }
+
+.post-stats { display: flex; gap: 4px; padding-top: 12px; border-top: 1px solid var(--border); flex-wrap: wrap; }
+.stat-btn {
+    display: flex; align-items: center; gap: 5px;
+    color: var(--muted); font-size: 13px; font-weight: 500;
+    padding: 6px 12px; border-radius: 50px;
+    border: none; background: none; cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+}
+.stat-btn:hover { background: var(--blue-soft); color: var(--blue); }
+.stat-btn.liked { color: var(--pink); }
+.stat-btn.liked:hover { background: rgba(249,24,128,0.1); }
+.stat-btn i { font-size: 15px; }
+.edit-link {
+    margin-left: auto; color: var(--muted); font-size: 13px;
+    padding: 6px 12px; border-radius: 50px;
+    text-decoration: none; display: flex; align-items: center; gap: 5px;
+    transition: background 0.12s, color 0.12s;
+}
+.edit-link:hover { background: var(--hover); color: var(--text); }
+.pin-btn { color: var(--muted); }
+.pin-btn.pinned { color: var(--blue); }
+.pin-btn:hover { background: var(--blue-soft) !important; color: var(--blue) !important; }
+
+/* Comments */
+.comments-section { padding: 0 16px; }
+[data-theme="light"] .comments-section { padding: 0 16px; }
+
+.comments-header { font-size: 15px; font-weight: 700; padding: 16px 0 12px; display: flex; align-items: center; gap: 8px; }
+
+[data-theme="light"] .comment-form-wrap {
+    background: var(--card); border-radius: 14px; border: none;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.07); padding: 14px; margin-bottom: 16px;
+}
+[data-theme="dark"] .comment-form-wrap {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px; margin-bottom: 16px;
+}
+
+.comment-form-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.comment-ava {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--card2); overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; color: var(--muted); flex-shrink: 0;
+    border: 1px solid var(--border);
+}
+.comment-ava img { width: 100%; height: 100%; object-fit: cover; }
+.comment-ava-name { font-weight: 600; font-size: 13px; }
+.comment-textarea {
+    width: 100%; background: var(--input-bg); border: 1px solid var(--border);
+    border-radius: 10px; color: var(--text); font-size: 14px;
+    padding: 10px 12px; resize: vertical; min-height: 72px;
+    font-family: inherit; transition: border-color 0.2s;
+}
+.comment-textarea:focus { outline: none; border-color: var(--blue); }
+.comment-form-footer { display: flex; justify-content: flex-end; margin-top: 8px; }
+.comment-submit {
+    background: var(--text); color: var(--bg);
+    border: none; border-radius: 50px;
+    padding: 7px 18px; font-size: 13px; font-weight: 700;
+    cursor: pointer; transition: opacity 0.12s;
+}
+.comment-submit:hover { opacity: 0.85; }
+[data-theme="light"] .comment-submit { background: #1a1a1a; color: #fff; }
+
+.comment-tree { display: flex; flex-direction: column; }
+.comment-item { display: flex; gap: 0; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.comment-item:last-child { border-bottom: none; }
+.comment-thread-line { width: 30px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; padding-top: 4px; }
+.comment-thread-ava {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--card2); overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; color: var(--muted); flex-shrink: 0;
+    border: 1px solid var(--border);
+}
+.comment-thread-ava img { width: 100%; height: 100%; object-fit: cover; }
+.thread-line { width: 2px; background: var(--border); flex: 1; margin-top: 6px; border-radius: 1px; min-height: 20px; }
+.comment-content { flex: 1; min-width: 0; padding-left: 10px; }
+.comment-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap; }
+.comment-author { font-weight: 600; font-size: 13px; }
+.comment-author a { color: inherit; text-decoration: none; }
+.comment-author a:hover { text-decoration: underline; }
+.comment-time { color: var(--muted); font-size: 11px; }
+.comment-text { font-size: 14px; line-height: 1.6; margin-bottom: 6px; word-break: break-word; color: var(--text2); }
+.comment-actions { display: flex; gap: 2px; align-items: center; }
+.cact-btn {
+    display: flex; align-items: center; gap: 4px;
+    color: var(--muted); font-size: 12px; font-weight: 500;
+    padding: 3px 8px; border-radius: 50px;
+    border: none; background: none; cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+}
+.cact-btn:hover { background: var(--blue-soft); color: var(--blue); }
+.cact-btn.liked { color: var(--pink); }
+.cact-btn.liked:hover { background: rgba(249,24,128,0.1); }
+.cact-btn.delete-btn:hover { background: rgba(248,81,73,0.1); color: #f85149; }
+.replies-wrap { padding-left: 14px; border-left: 2px solid var(--border); margin-top: 8px; }
+.reply-item { display: flex; gap: 0; padding: 8px 0; border-bottom: 1px solid rgba(128,128,128,0.15); }
+.reply-item:last-child { border-bottom: none; }
+.reply-form-wrap { margin-top: 8px; display: none; }
+.reply-form-wrap.open { display: block; }
+.reply-textarea {
+    width: 100%; background: var(--input-bg); border: 1px solid var(--border);
+    border-radius: 10px; color: var(--text); font-size: 13px;
+    padding: 8px 10px; resize: none; min-height: 56px;
+    font-family: inherit; transition: border-color 0.2s;
+}
+.reply-textarea:focus { outline: none; border-color: var(--blue); }
+.reply-form-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px; }
+.reply-cancel {
+    background: none; border: 1px solid var(--border); color: var(--text2);
+    border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: background 0.12s;
+}
+.reply-cancel:hover { background: var(--hover); }
+.reply-submit {
+    background: var(--text); color: var(--bg); border: none;
+    border-radius: 50px; padding: 5px 14px; font-size: 13px; font-weight: 700;
+    cursor: pointer; transition: opacity 0.12s;
+}
+.reply-submit:hover { opacity: 0.85; }
+[data-theme="light"] .reply-submit { background: #1a1a1a; color: #fff; }
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <button class="back-btn" onclick="window.history.back()"><i class="fas fa-arrow-left"></i></button>
+    <h1>Пост</h1>
+</div>
+
+<div class="detail-wrap">
+    <!-- Post -->
+    <div class="post-section">
+        <div class="post-author-row">
+            <a href="{% url 'user:profile' post.created_by.username %}">
+                <div class="post-ava">
+                    {% if post.created_by.avatar %}
+                    <img src="{{ post.created_by.avatar.url }}" alt="">
+                    {% else %}<i class="fas fa-user"></i>{% endif %}
+                </div>
+            </a>
+            <div>
+                <a href="{% url 'user:profile' post.created_by.username %}" style="color:inherit;text-decoration:none">
+                    <div class="post-author-name">{{ post.created_by.get_full_name|default:post.created_by.username }}</div>
+                    <div class="post-author-user">@{{ post.created_by.username }}</div>
+                </a>
+            </div>
+            <div class="post-date">{{ post.created }}</div>
+        </div>
+
+        <h1 class="post-title">{{ post.title }}</h1>
+
+        {% if post.image %}
+        <img src="{{ post.image.url }}" class="post-image" alt="{{ post.title }}">
+        {% endif %}
+
+        <div class="post-content" id="postContent"></div>
+
+        <div class="post-stats">
+            <button class="stat-btn liked-post-btn {% if user_liked %}liked{% endif %}"
+                    data-pk="{{ post.pk }}"
+                    data-liked="{% if user_liked %}1{% else %}0{% endif %}">
+                <i class="{% if user_liked %}fas{% else %}far{% endif %} fa-heart"></i>
+                <span id="likeCount">{{ post.likes.count }}</span>
+            </button>
+            <button class="stat-btn" onclick="document.getElementById('commentTextarea').focus()">
+                <i class="far fa-comment"></i>
+                <span>{{ post.comments.count }}</span>
+            </button>
+            <span style="color:var(--muted);font-size:13px;padding:7px 12px;display:flex;align-items:center;gap:5px">
+                <i class="far fa-eye"></i> {{ post.views }}
+            </span>
+            {% if request.user == post.created_by %}
+            <a href="{% url 'posts:edit' post.pk %}" class="edit-link">
+                <i class="fas fa-pen"></i> Редактировать
+            </a>
+            {% endif %}
+            {% if request.user.is_staff %}
+            <button class="stat-btn pin-btn {% if post.is_pinned %}pinned{% endif %}"
+                    id="pinBtn" data-pk="{{ post.pk }}" title="{% if post.is_pinned %}Открепить{% else %}Закрепить{% endif %}">
+                <i class="fas fa-thumbtack"></i>
+                <span id="pinLabel">{% if post.is_pinned %}Закреплён{% else %}Закрепить{% endif %}</span>
+            </button>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Comments -->
+    <div class="comments-section" id="comments">
+        <div class="comments-header">
+            <i class="far fa-comment" style="color:var(--blue)"></i>
+            Комментарии · {{ post.comments.count }}
+        </div>
+
+        <!-- New comment form -->
+        <div class="comment-form-wrap">
+            <div class="comment-form-header">
+                <div class="comment-ava">
+                    {% if request.user.avatar %}
+                    <img src="{{ request.user.avatar.url }}" alt="">
+                    {% else %}<i class="fas fa-user"></i>{% endif %}
+                </div>
+                <span class="comment-ava-name">{{ request.user.get_full_name|default:request.user.username }}</span>
+            </div>
+            <form method="post" id="commentForm">
+                {% csrf_token %}
+                <input type="hidden" name="parent_id" id="parentIdInput" value="">
+                <textarea name="text" id="commentTextarea" class="comment-textarea"
+                          placeholder="Напишите комментарий..." rows="3"></textarea>
+                <div class="comment-form-footer">
+                    <button type="submit" class="comment-submit">Отправить</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Comment tree -->
+        <div class="comment-tree">
+            {% for comment in comments %}
+            <div class="comment-item" id="comment-{{ comment.pk }}">
+                <div class="comment-thread-line">
+                    <a href="{% url 'user:profile' comment.author.username %}">
+                        <div class="comment-thread-ava">
+                            {% if comment.author.avatar %}
+                            <img src="{{ comment.author.avatar.url }}" alt="">
+                            {% else %}<i class="fas fa-user"></i>{% endif %}
+                        </div>
+                    </a>
+                    {% if comment.replies.exists %}<div class="thread-line"></div>{% endif %}
+                </div>
+                <div class="comment-content">
+                    <div class="comment-meta">
+                        <span class="comment-author">
+                            <a href="{% url 'user:profile' comment.author.username %}">
+                                {{ comment.author.get_full_name|default:comment.author.username }}
+                            </a>
+                        </span>
+                        <span class="comment-time">{{ comment.created|timesince }} назад</span>
+                    </div>
+                    <div class="comment-text">{{ comment.text }}</div>
+                    <div class="comment-actions">
+                        <button class="cact-btn clike-btn {% if request.user in comment.likes.all %}liked{% endif %}"
+                                data-pk="{{ comment.pk }}">
+                            <i class="{% if request.user in comment.likes.all %}fas{% else %}far{% endif %} fa-heart"></i>
+                            <span class="clike-count">{{ comment.likes.count }}</span>
+                        </button>
+                        <button class="cact-btn reply-toggle-btn" data-target="reply-form-{{ comment.pk }}">
+                            <i class="far fa-comment"></i> Ответить
+                        </button>
+                        {% if request.user == comment.author or request.user.is_staff %}
+                        <button class="cact-btn delete-btn" data-pk="{{ comment.pk }}" data-type="comment">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+
+                    <!-- Inline reply form -->
+                    <div class="reply-form-wrap" id="reply-form-{{ comment.pk }}">
+                        <form method="post" class="reply-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="parent_id" value="{{ comment.pk }}">
+                            <textarea name="text" class="reply-textarea" placeholder="Ваш ответ..." rows="2"></textarea>
+                            <div class="reply-form-footer">
+                                <button type="button" class="reply-cancel" data-target="reply-form-{{ comment.pk }}">Отмена</button>
+                                <button type="submit" class="reply-submit">Ответить</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Replies -->
+                    {% if comment.replies.exists %}
+                    <div class="replies-wrap">
+                        {% for reply in comment.replies.all %}
+                        <div class="reply-item" id="comment-{{ reply.pk }}">
+                            <div class="comment-thread-line" style="width:28px">
+                                <a href="{% url 'user:profile' reply.author.username %}">
+                                    <div class="comment-thread-ava">
+                                        {% if reply.author.avatar %}
+                                        <img src="{{ reply.author.avatar.url }}" alt="">
+                                        {% else %}<i class="fas fa-user"></i>{% endif %}
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="comment-content">
+                                <div class="comment-meta">
+                                    <span class="comment-author">
+                                        <a href="{% url 'user:profile' reply.author.username %}">
+                                            {{ reply.author.get_full_name|default:reply.author.username }}
+                                        </a>
+                                    </span>
+                                    <span class="comment-time">{{ reply.created|timesince }} назад</span>
+                                </div>
+                                <div class="comment-text">{{ reply.text }}</div>
+                                <div class="comment-actions">
+                                    <button class="cact-btn clike-btn {% if request.user in reply.likes.all %}liked{% endif %}"
+                                            data-pk="{{ reply.pk }}">
+                                        <i class="{% if request.user in reply.likes.all %}fas{% else %}far{% endif %} fa-heart"></i>
+                                        <span class="clike-count">{{ reply.likes.count }}</span>
+                                    </button>
+                                    {% if request.user == reply.author or request.user.is_staff %}
+                                    <button class="cact-btn delete-btn" data-pk="{{ reply.pk }}" data-type="reply">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <div style="text-align:center;color:var(--muted);padding:32px 0;font-size:14px">
+                <i class="far fa-comment" style="font-size:32px;display:block;margin-bottom:10px"></i>
+                Комментариев пока нет. Будьте первым!
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+// Render markdown
+document.getElementById('postContent').innerHTML = marked.parse(`{{ post.description|escapejs }}`);
+
+function getCookie(name) {
+    const v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+    return v ? v[2] : null;
+}
+
+// Like post
+document.querySelector('.liked-post-btn').addEventListener('click', function() {
+    const action = this.dataset.liked === '1' ? '2' : '1';
+    fetch(`/api/{{ post.pk }}/${action}/`)
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                this.dataset.liked = data.is_liked ? '1' : '0';
+                this.classList.toggle('liked', data.is_liked);
+                this.querySelector('i').className = data.is_liked ? 'fas fa-heart' : 'far fa-heart';
+                document.getElementById('likeCount').textContent = data.likes_count;
+            }
+        });
+});
+
+// Like comments
+document.querySelectorAll('.clike-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const pk = this.dataset.pk;
+        fetch(`/api/comment/${pk}/like/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCookie('csrftoken') }
+        }).then(r => r.json()).then(data => {
+            if (data.success) {
+                this.classList.toggle('liked', data.liked);
+                this.querySelector('i').className = data.liked ? 'fas fa-heart' : 'far fa-heart';
+                this.querySelector('.clike-count').textContent = data.count;
+            }
+        });
+    });
+});
+
+// Toggle reply forms
+document.querySelectorAll('.reply-toggle-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const target = document.getElementById(this.dataset.target);
+        target.classList.toggle('open');
+        if (target.classList.contains('open')) {
+            target.querySelector('textarea').focus();
+        }
+    });
+});
+
+document.querySelectorAll('.reply-cancel').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.getElementById(this.dataset.target).classList.remove('open');
+    });
+});
+
+// Delete comments
+document.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        if (!confirm('Удалить комментарий?')) return;
+        const pk = this.dataset.pk;
+        fetch(`/api/comment/${pk}/delete/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCookie('csrftoken') }
+        }).then(r => r.json()).then(data => {
+            if (data.success) {
+                const el = document.getElementById(`comment-${pk}`);
+                if (el) el.remove();
+            }
+        });
+    });
+});
+
+// Pin post (staff only)
+const pinBtn = document.getElementById('pinBtn');
+if (pinBtn) {
+    pinBtn.addEventListener('click', function() {
+        const pk = this.dataset.pk;
+        fetch(`/api/post/${pk}/pin/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCookie('csrftoken') }
+        }).then(r => r.json()).then(data => {
+            if (data.success) {
+                const label = document.getElementById('pinLabel');
+                if (data.pinned) {
+                    this.classList.add('pinned');
+                    label.textContent = 'Закреплён';
+                    this.title = 'Открепить';
+                } else {
+                    this.classList.remove('pinned');
+                    label.textContent = 'Закрепить';
+                    this.title = 'Закрепить';
+                }
+            }
+        });
+    });
+}
+{% endblock %}

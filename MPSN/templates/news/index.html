@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block title %}Новости — Doupig{% endblock %}
+{% block nav_news %}active{% endblock %}
+
+{% block extra_css %}
+.news-wrap { max-width: 640px; margin: 0 auto; }
+
+[data-theme="light"] .news-card {
+    background: var(--card); border-radius: 16px; border: none;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+    margin: 10px 16px; overflow: hidden;
+}
+[data-theme="light"] .news-card:hover { box-shadow: 0 3px 14px rgba(0,0,0,0.11); }
+[data-theme="light"] .news-wrap { padding: 8px 0; }
+[data-theme="dark"] .news-card { border-bottom: 1px solid var(--border); }
+[data-theme="dark"] .news-card:hover { background: rgba(255,255,255,0.02); }
+
+.news-card {
+    display: flex; flex-direction: column;
+    transition: background 0.12s, box-shadow 0.12s;
+    text-decoration: none; color: inherit;
+}
+.news-card-img { width: 100%; max-height: 260px; object-fit: cover; }
+.news-card-body { padding: 14px 16px; }
+.news-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.news-badge {
+    background: var(--blue-soft); color: var(--blue);
+    font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 50px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+}
+.news-date { color: var(--muted); font-size: 12px; }
+.news-author { color: var(--muted); font-size: 12px; }
+.news-title { font-size: 16px; font-weight: 700; line-height: 1.3; margin-bottom: 6px; }
+.news-excerpt { color: var(--text2); font-size: 13px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.empty-news { text-align: center; color: var(--muted); padding: 60px 20px; font-size: 14px; }
+.empty-news i { font-size: 40px; display: block; margin-bottom: 12px; }
+.pagination { display: flex; justify-content: center; gap: 8px; padding: 20px; }
+.page-btn {
+    background: var(--card); border: 1px solid var(--border);
+    color: var(--text); padding: 7px 16px; border-radius: 50px;
+    text-decoration: none; font-size: 13px; font-weight: 600;
+    transition: background 0.12s;
+}
+.page-btn:hover { background: var(--hover); }
+.page-btn.current { background: var(--blue); border-color: var(--blue); color: #fff; }
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Новости</h1>
+    {% if request.user.is_staff %}
+    <a href="{% url 'misc:news_create' %}" style="margin-left:auto;background:var(--blue);color:#fff;border:none;border-radius:50px;padding:8px 18px;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none">
+        + Написать
+    </a>
+    {% endif %}
+</div>
+
+<div class="news-wrap">
+    {% for item in news %}
+    <a href="{% url 'misc:news_detail' item.pk %}" class="news-card">
+        {% if item.image %}
+        <img src="{{ item.image.url }}" class="news-card-img" alt="{{ item.title }}">
+        {% endif %}
+        <div class="news-card-body">
+            <div class="news-meta">
+                <span class="news-badge">Новость</span>
+                <span class="news-date">{{ item.created|date:"d M Y, H:i" }}</span>
+                <span class="news-author">· {{ item.author.get_full_name|default:item.author.username }}</span>
+            </div>
+            <div class="news-title">{{ item.title }}</div>
+            <div class="news-excerpt">{{ item.content|truncatechars:200 }}</div>
+        </div>
+    </a>
+    {% empty %}
+    <div class="empty-news">
+        <i class="fas fa-newspaper"></i>
+        Новостей пока нет
+    </div>
+    {% endfor %}
+
+    {% if news.paginator.num_pages > 1 %}
+    <div class="pagination">
+        {% if news.has_previous %}
+        <a href="?page={{ news.previous_page_number }}" class="page-btn">← Назад</a>
+        {% endif %}
+        <span class="page-btn current">{{ news.number }} / {{ news.paginator.num_pages }}</span>
+        {% if news.has_next %}
+        <a href="?page={{ news.next_page_number }}" class="page-btn">Вперёд →</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

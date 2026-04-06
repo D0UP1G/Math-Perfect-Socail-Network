@@ -1,55 +1,43 @@
 from django import forms
 from .models import PostModel
-from django.utils import timezone
-from user.models import CustomUser
 
 class PostForm(forms.ModelForm):
     class Meta:
         model = PostModel
-        fields = ['title', 'description']
+        fields = ['title', 'description', 'image']
         widgets = {
             'title': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Введите заголовок поста',
-                'id': 'post-title',
                 'autocomplete': 'off',
-                'type':'text',
-                'name':'title',
-                'maxlength':'100',
+                'maxlength': '128',
             }),
             'description': forms.Textarea(attrs={
                 'class': 'form-control',
                 'placeholder': 'Напишите содержание поста',
                 'id': 'markdown-editor',
                 'rows': 8,
-                'name':"content",
-                
+            }),
+            'image': forms.FileInput(attrs={
+                'class': 'form-control-file',
+                'accept': 'image/*',
             }),
         }
         labels = {
             'title': 'Заголовок',
-            'description': 'Содержание'
-        }
-        error_messages = {
-            'title': {
-                'max_length': "Заголовок не должен превышать 128 символов",
-                'required': "Пожалуйста, укажите заголовок"
-            },
-            'description': {
-                'max_length': "Текст поста не должен превышать 8128 символов",
-                'required': "Пожалуйста, напишите содержание поста"
-            }
+            'description': 'Содержание',
+            'image': 'Изображение',
         }
 
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', None)  # Получаем пользователя из аргументов
+        self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
 
     def save(self, commit=True):
         instance = super().save(commit=False)
-        instance.created_by = self.user  # Устанавливаем автора
-        instance.views = 0  # Инициализируем просмотры
-        
+        instance.created_by = self.user
+        if not instance.pk:
+            instance.views = 0
         if commit:
             instance.save()
         return instance

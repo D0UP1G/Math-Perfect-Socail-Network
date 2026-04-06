@@ -1,914 +1,165 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Профиль |</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        a {
-            text-decoration: none;
-            color: #fff;
-        }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        :root {
-            --bg-color: #000000;
-            --text-color: #ffffff;
-            --border-color: #2f3336;
-            --hover-color: #181818;
-            --primary-color: #1d9bf0;
-            --secondary-color: #71767b;
-            --container-color: #16181c;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            min-height: 100vh;
-            display: flex;
-            position: relative;
-        }
-
-        /* Адаптивный сайдбар */
-        .sidebar {
-            width: 275px;
-            padding: 8px 12px;
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid var(--border-color);
-            transition: all 0.3s ease;
-            z-index: 100;
-            background-color: var(--bg-color);
-            overflow-y: auto;
-        }
-
-        .logo {
-            padding: 12px;
-            margin-bottom: 8px;
-        }
-
-        .logo i {
-            font-size: 28px;
-            color: var(--text-color);
-        }
-
-        .nav-item {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            margin: 4px 0;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 20px;
-            font-weight: 500;
-            transition: background-color 0.2s;
-            white-space: nowrap;
-        }
-
-        .nav-item:hover {
-            background-color: var(--hover-color);
-        }
-
-        .nav-item i {
-            margin-right: 16px;
-            width: 26px;
-            text-align: center;
-            flex-shrink: 0;
-        }
-
-        .nav-item.active {
-            font-weight: 700;
-            background-color: var(--hover-color);
-        }
-
-        .tweet-btn {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            padding: 16px;
-            font-size: 17px;
-            font-weight: 700;
-            margin-top: 16px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            width: 100%;
-            text-align: center;
-        }
-
-        .tweet-btn:hover {
-            background-color: #1a8cd8;
-        }
-
-        .profile-mini {
-            display: flex;
-            align-items: center;
-            margin-top: auto;
-            padding: 12px;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            margin-bottom: 20px;
-        }
-
-        .profile-mini:hover {
-            background-color: var(--hover-color);
-        }
-
-        .profile-mini img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 12px;
-            flex-shrink: 0;
-        }
-
-        .profile-mini .info {
-            flex-grow: 1;
-            overflow: hidden;
-        }
-
-        .profile-mini .name {
-            font-weight: 700;
-            font-size: 15px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .profile-mini .username {
-            color: var(--secondary-color);
-            font-size: 15px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* Центральный контент */
-        .main-content {
-            margin-left: 275px;
-            width: calc(100% - 275px);
-            min-height: 100vh;
-            transition: all 0.3s ease;
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            justify-content: center;
-        }
-
-        /* Новый контейнер для центрирования */
-        .center-container {
-            width: 100%;
-            max-width: 600px;
-        }
-
-        .header {
-            position: sticky;
-            top: 0;
-            background-color: rgba(0, 0, 0, 0.65);
-            backdrop-filter: blur(12px);
-            z-index: 10;
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .header h1 {
-            font-size: 20px;
-            font-weight: 800;
-        }
-
-        .profile-header {
-            position: relative;
-        }
-        
-        .banner-container {
-            height: 200px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .banner-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center;
-        }
-        
-        .banner {
-            background-image: url('https://i.pinimg.com/736x/af/ad/c7/afadc7d79828c6d1d52a90867d685d55.jpg');
-            height: 200px;
-            background-color: #333;
-            background-image: linear-gradient(45deg, #333 25%, #444 25%, #444 50%, #333 50%, #333 75%, #444 75%, #444 100%);
-            background-size: 40px 40px;
-        }
-
-        .profile-info {
-            padding: 0 16px;
-        }
-
-        .avatar-container {
-            display: flex;
-            justify-content: space-between;
-            margin-top: -65px;
-        }
-
-        .avatar {
-            width: 133px;
-            height: 133px;
-            border-radius: 50%;
-            border: 4px solid var(--bg-color);
-        }
-
-        .edit-btn {
-            background-color: transparent;
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-            border-radius: 50px;
-            padding: 8px 16px;
-            font-size: 15px;
-            font-weight: 700;
-            margin-top: 16px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .edit-btn:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .user-details {
-            margin-top: 12px;
-        }
-
-        .user-details h2 {
-            font-size: 20px;
-            font-weight: 800;
-        }
-
-        .user-details .username {
-            color: var(--secondary-color);
-            margin: 4px 0 12px;
-        }
-
-        .user-details .bio {
-            margin: 12px 0;
-            line-height: 1.4;
-        }
-
-        .user-stats {
-            display: flex;
-            margin: 16px 0;
-            color: var(--secondary-color);
-        }
-
-        .user-stats div {
-            margin-right: 20px;
-        }
-
-        .user-stats span {
-            color: var(--text-color);
-            font-weight: 700;
-        }
-
-        .tabs {
-            display: flex;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .tab {
-            flex: 1;
-            text-align: center;
-            padding: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .tab:hover {
-            background-color: var(--hover-color);
-        }
-
-        .tab.active {
-            position: relative;
-        }
-
-        .tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 4px;
-            background-color: var(--primary-color);
-            border-radius: 2px;
-        }
-
-        .posts {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .post {
-            color: #fff;
-            padding: 16px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            transition: background-color 0.2s;
-        }
-
-        .post:hover {
-            background-color: var(--hover-color);
-        }
-
-        .post-avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            margin-right: 12px;
-            background-color: #333;
-        }
-
-        .post-content {
-            flex: 1;
-        }
-
-        .post-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 4px;
-        }
-
-        .post-author {
-            font-weight: 700;
-            margin-right: 6px;
-        }
-
-        .post-username {
-            color: var(--secondary-color);
-            margin-right: 6px;
-        }
-
-        .post-time {
-            color: var(--secondary-color);
-        }
-
-        .post-text {
-            margin-bottom: 12px;
-            line-height: 1.4;
-        }
-
-        .post-stats {
-            display: flex;
-            color: var(--secondary-color);
-            max-width: 425px;
-            justify-content: space-between;
-        }
-
-        .post-stat {
-            display: flex;
-            align-items: center;
-        }
-
-        .post-stat i {
-            margin-right: 8px;
-        }
-
-        .post-stat:hover {
-            color: var(--primary-color);
-            cursor: pointer;
-        }
-
-        /* Правый сайдбар */
-        .right-sidebar {
-            width: 350px;
-            padding: 16px;
-            position: fixed;
-            right: 0;
-            height: 100vh;
-            overflow-y: auto;
-        }
-
-        .search-container {
-            position: sticky;
-            top: 0;
-            background-color: var(--bg-color);
-            padding: 12px 0;
-            z-index: 10;
-        }
-
-        .search-box {
-            background-color: var(--container-color);
-            border-radius: 50px;
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-        }
-
-        .search-box i {
-            color: var(--secondary-color);
-            margin-right: 12px;
-        }
-
-        .search-box input {
-            background: transparent;
-            border: none;
-            color: var(--text-color);
-            font-size: 15px;
-            width: 100%;
-            outline: none;
-        }
-
-        .trends-container {
-            background-color: var(--container-color);
-            border-radius: 16px;
-            margin-top: 16px;
-            overflow: hidden;
-        }
-
-        .section-title {
-            padding: 16px;
-            font-size: 20px;
-            font-weight: 800;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .trend-item {
-            padding: 16px;
-            border-bottom: 1px solid var(--border-color);
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .trend-item:hover {
-            background-color: rgba(255, 255, 255, 0.03);
-        }
-
-        .trend-category {
-            color: var(--secondary-color);
-            font-size: 13px;
-            margin-bottom: 4px;
-        }
-
-        .trend-name {
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .trend-count {
-            color: var(--secondary-color);
-            font-size: 13px;
-        }
-
-        .show-more {
-            padding: 16px;
-            color: var(--primary-color);
-            cursor: pointer;
-        }
-
-        .who-to-follow {
-            background-color: var(--container-color);
-            border-radius: 16px;
-            margin-top: 16px;
-            overflow: hidden;
-        }
-
-        .user-to-follow {
-            padding: 16px;
-            display: flex;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .user-to-follow:hover {
-            background-color: rgba(255, 255, 255, 0.03);
-        }
-
-        .user-to-follow img {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            margin-right: 12px;
-            background-color: #333;
-        }
-
-        .user-info {
-            flex-grow: 1;
-        }
-
-        .user-info .name {
-            font-weight: 700;
-        }
-
-        .user-info .username {
-            color: var(--secondary-color);
-        }
-
-        .follow-btn {
-            background-color: var(--text-color);
-            color: var(--bg-color);
-            border: none;
-            border-radius: 50px;
-            padding: 8px 16px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .follow-btn:hover {
-            background-color: #e6e6e6;
-        }
-
-        /* Футер */
-        .footer {
-            padding: 16px;
-            color: var(--secondary-color);
-            font-size: 13px;
-        }
-
-        .footer-links {
-            display: flex;
-            flex-wrap: wrap;
-            margin-bottom: 8px;
-        }
-
-        .footer-link {
-            margin-right: 12px;
-            margin-bottom: 4px;
-            cursor: pointer;
-        }
-
-        .footer-link:hover {
-            text-decoration: underline;
-        }
-
-        /* Кнопка меню для мобильных */
-        .menu-toggle {
-            display: none;
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            z-index: 1000;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            font-size: 20px;
-            cursor: pointer;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Медиазапросы для адаптивности */
-        @media (max-width: 1280px) {
-            .sidebar {
-                width: 88px;
-                align-items: center;
-                padding: 8px;
-            }
-            
-            .nav-item {
-                width: 50px;
-                height: 50px;
-                padding: 0;
-                justify-content: center;
-            }
-            
-            .nav-item span {
-                display: none;
-            }
-            
-            .nav-item i {
-                margin-right: 0;
-                font-size: 24px;
-            }
-            
-            .tweet-btn {
-                width: 50px;
-                height: 50px;
-                padding: 0;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-            
-            .tweet-btn span {
-                display: none;
-            }
-            
-            .profile-mini {
-                width: 50px;
-                height: 50px;
-                padding: 0;
-                justify-content: center;
-            }
-            
-            .profile-mini .info {
-                display: none;
-            }
-            
-            .profile-mini img {
-                margin-right: 0;
-            }
-            
-            .main-content {
-                margin-left: 88px;
-                width: calc(100% - 88px);
-            }
-        }
-
-        @media (max-width: 1000px) {
-            .right-sidebar {
-                display: none;
-            }
-        }
-
-        @media (max-width: 500px) {
-            .sidebar {
-                transform: translateX(-100%);
-                width: 275px;
-            }
-            
-            .sidebar.active {
-                transform: translateX(0);
-            }
-            
-            .main-content {
-                margin-left: 0;
-                width: 100%;
-            }
-            
-            .menu-toggle {
-                display: flex;
-            }
-        }
-    </style>
-</head>
-<body>
-    <button class="menu-toggle" id="menuToggle">
-        <i class="fas fa-bars"></i>
-    </button>
-
-    <!-- Левый сайдбар -->
-    <div class="sidebar" id="sidebar">
-        <div class="logo">
-            <i class="fab fa-x-twitter"></i>
-        </div>
-        <a href="{% url 'misc:home' %}">
-            <div class="nav-item">
-                <i class="fas fa-home"></i>
-                <span>Главная</span>
-            </div>
-        </a>
-        <a href="{% url 'misc:leaderboard' %}">
-            <div class="nav-item">
-                <i class="fas fa-trophy"></i>
-                <span>Лидерборд</span>
-            </div>
-        </a>
-        <a href="{% url 'user:profile' request.user.username %}">
-            <div class="nav-item">
+{% extends 'base.html' %}
+{% block title %}{{ user.username }} — Doupig{% endblock %}
+{% block nav_profile %}{% if request.user == user %}active{% endif %}{% endblock %}
+
+{% block extra_css %}
+.profile-wrap { max-width: 600px; margin: 0 auto; }
+
+.banner { height: 200px; background: linear-gradient(135deg, #1a1a2e, #16213e); position: relative; }
+.banner img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.banner-empty { width: 100%; height: 100%; background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%); }
+
+[data-theme="light"] .profile-info-card {
+    background: var(--card); border-radius: 0 0 16px 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07); margin: 0 0 12px;
+}
+
+.profile-info { padding: 0 16px 16px; position: relative; }
+.avatar-row {
+    display: flex; justify-content: space-between;
+    align-items: flex-end; margin-top: -52px; margin-bottom: 12px;
+    position: relative; z-index: 2;
+}
+.profile-avatar {
+    width: 104px; height: 104px; border-radius: 50%;
+    border: 4px solid var(--bg);
+    background: var(--card2); overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 40px; color: var(--muted); position: relative; z-index: 2;
+}
+.profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.edit-profile-btn {
+    background: var(--text); color: var(--bg);
+    border: none; border-radius: 50px;
+    padding: 8px 18px; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: opacity 0.15s;
+    text-decoration: none; display: inline-block;
+}
+.edit-profile-btn:hover { opacity: 0.85; }
+[data-theme="light"] .edit-profile-btn { background: #1a1a1a; color: #fff; }
+
+.profile-name { font-size: 20px; font-weight: 700; margin-bottom: 2px; }
+.profile-username { color: var(--muted); font-size: 14px; margin-bottom: 10px; }
+.profile-bio { font-size: 14px; line-height: 1.5; margin-bottom: 12px; color: var(--text2); }
+.profile-stats { display: flex; gap: 20px; color: var(--muted); font-size: 14px; }
+.profile-stats span { color: var(--text); font-weight: 700; }
+
+.posts-tab {
+    border-bottom: 1px solid var(--border);
+    padding: 14px 16px; font-weight: 600; font-size: 14px; position: relative;
+}
+.posts-tab::after {
+    content: ''; position: absolute; bottom: 0; left: 16px;
+    width: 40px; height: 3px; background: var(--blue); border-radius: 2px;
+}
+
+[data-theme="light"] .post-item {
+    background: var(--card); border-radius: 12px;
+    margin: 8px 12px; border: none;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+[data-theme="light"] .post-item:hover { box-shadow: 0 3px 12px rgba(0,0,0,0.1); }
+[data-theme="dark"] .post-item { border-bottom: 1px solid var(--border); }
+[data-theme="dark"] .post-item:hover { background: var(--hover); }
+
+.post-item {
+    display: flex; gap: 12px; padding: 14px 16px;
+    transition: background 0.15s, box-shadow 0.15s;
+    text-decoration: none; color: inherit;
+}
+.post-item-ava {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--card2); overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: var(--muted); flex-shrink: 0;
+    border: 1px solid var(--border);
+}
+.post-item-ava img { width: 100%; height: 100%; object-fit: cover; }
+.post-item-body { flex: 1; min-width: 0; }
+.post-item-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap; }
+.post-item-title { font-weight: 600; font-size: 14px; }
+.post-item-date { color: var(--muted); font-size: 12px; }
+.post-item-excerpt { color: var(--text2); font-size: 13px; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.post-item-thumb { width: 56px; height: 56px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
+.post-item-stats { display: flex; gap: 12px; color: var(--muted); font-size: 12px; }
+.post-item-stats i { margin-right: 3px; }
+.empty-posts { text-align: center; color: var(--muted); padding: 48px 20px; font-size: 14px; }
+.empty-posts i { font-size: 36px; display: block; margin-bottom: 12px; }
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{{ user.first_name|default:user.username }}</h1>
+</div>
+
+<div class="profile-wrap">
+    <div class="banner">
+        {% with banner=user.get_banner %}
+        {% if banner %}
+        <img src="{{ banner }}" alt="Баннер">
+        {% else %}
+        <div class="banner-empty"></div>
+        {% endif %}
+        {% endwith %}
+    </div>
+
+    <div class="profile-info">
+        <div class="avatar-row">
+            <div class="profile-avatar">
+                {% if user.avatar %}
+                <img src="{{ user.avatar.url }}" alt="{{ user.username }}">
+                {% else %}
                 <i class="fas fa-user"></i>
-                <span>Профиль</span>
+                {% endif %}
             </div>
-        </a>
-        
-        <a href="{% url 'posts:create' %}">
-            <button class="tweet-btn">
-                <span>Опубликовать</span>
-            </button>
-        </a>
-        
-        <div class="profile-mini">
-            <div class="info">
-                <div class="name">{{ user.first_name }} {{ user.last_name }}</div>
-                <a href="{% url 'user:logout' %}"><div class="username">Выход</div></a>
-            </div>
+            {% if request.user == user %}
+            <a href="{% url 'user:edit' %}" class="edit-profile-btn">Редактировать</a>
+            {% endif %}
+        </div>
+
+        <div class="profile-name">{{ user.first_name }} {{ user.last_name }}</div>
+        <div class="profile-username">@{{ user.username }}</div>
+        {% if user.descriptions %}
+        <div class="profile-bio">{{ user.descriptions }}</div>
+        {% endif %}
+        <div class="profile-stats">
+            <div><span>{{ user.score }}</span> лайков получено</div>
+            <div><span>{{ posts|length }}</span> постов</div>
         </div>
     </div>
 
-    <!-- Основной контент -->
-    <div class="main-content" id="mainContent">
-        <!-- Новый контейнер для центрирования -->
-        <div class="center-container">
-            <div class="header">
-                <h1>{{ user.first_name }}</h1>
+    <div class="posts-tab">Посты</div>
+
+    {% for post in posts %}
+    <a href="{% url 'posts:detail' post.pk %}" class="post-item">
+        <div class="post-item-ava">
+            {% if user.avatar %}
+            <img src="{{ user.avatar.url }}" alt="">
+            {% else %}<i class="fas fa-user"></i>{% endif %}
+        </div>
+        <div class="post-item-body">
+            <div class="post-item-header">
+                <span class="post-item-title">{{ post.title }}</span>
+                <span class="post-item-date">{{ post.created }}</span>
+                {% if post.is_pinned %}<span style="color:var(--blue);font-size:12px"><i class="fas fa-thumbtack"></i></span>{% endif %}
             </div>
-            
-            <div class="profile-header">
-                <div class="banner-container">
-                    <img src="{{ user.banner_url }}" alt="Баннер профиля" class="banner-image">
-                </div>
-                <div class="profile-info">
-                    <div class="avatar-container">
-                        <div class="avatar"></div>
-                        {% if request.user == user %}
-                           
-                                <button class="edit-btn"><a href="{% url 'user:edit' %}">Редактировать профиль</a></button>
-                            
-                        {% endif %}
-                    </div>
-                    
-                    <div class="user-details">
-                        <h2>{{ user.first_name }} {{ user.last_name }}</h2>
-                        <div class="username">@{{ user.username }}</div>
-                        <div class="bio">
-                            {{ user.descriptions }}
-                        </div>
-                        
-                        <div class="user-stats">
-                            <div><span> {{ user.score }} </span> баллов </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="tabs">
-                <div class="tab active">Посты</div>
-            </div>
-            
-            <div class="posts">
-                {% for post in posts %}
-                <a style="text-decoration: none;" href="{% url 'posts:edit' post.pk %}">
-                    <div class="post">
-                        <div class="post-avatar"></div>
-                        <div class="post-content">
-                            <div class="post-header">
-                                <div class="post-author">{{ post.title }}</div>
-                                <div class="post-username">@{{ post.created_by }}</div>
-                                <div class="post-time">{{ post.created }}</div>
-                            </div>
-                            <div class="post-text">
-                                {{ post.description|truncatechars:50 }}
-                            </div>
-                            <div class="post-stats">
-                                <div class="post-stat">
-                                    <i class="far fa-heart"></i>
-                                    <span>{{ post.likes.count }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-                {% endfor %}
+            <div class="post-item-excerpt">{{ post.description|truncatechars:80 }}</div>
+            <div class="post-item-stats">
+                <span><i class="far fa-heart" style="color:var(--pink)"></i>{{ post.likes.count }}</span>
+                <span><i class="far fa-comment"></i>{{ post.comments.count }}</span>
+                <span><i class="far fa-eye"></i>{{ post.views }}</span>
             </div>
         </div>
+        {% if post.image %}
+        <img src="{{ post.image.url }}" class="post-item-thumb" alt="">
+        {% endif %}
+    </a>
+    {% empty %}
+    <div class="empty-posts">
+        <i class="fas fa-pen-nib"></i>
+        Постов пока нет
     </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const menuToggle = document.getElementById('menuToggle');
-            const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('mainContent');
-            
-            // Проверяем ширину экрана и показываем/скрываем кнопку меню
-            function checkScreenSize() {
-                if (window.innerWidth <= 500) {
-                    menuToggle.style.display = 'flex';
-                    sidebar.classList.remove('active');
-                } else if (window.innerWidth <= 1280) {
-                    menuToggle.style.display = 'none';
-                    sidebar.style.width = '88px';
-                    sidebar.style.padding = '8px';
-                    mainContent.style.marginLeft = '88px';
-                    mainContent.style.width = 'calc(100% - 88px)';
-                } else {
-                    menuToggle.style.display = 'none';
-                    sidebar.style.width = '275px';
-                    sidebar.style.padding = '8px 12px';
-                    mainContent.style.marginLeft = '275px';
-                    mainContent.style.width = 'calc(100% - 275px)';
-                }
-            }
-            
-            // Обработчик клика по кнопке меню
-            menuToggle.addEventListener('click', function() {
-                sidebar.classList.toggle('active');
-                
-                // Блокируем прокрутку основного контента при открытом меню
-                if (sidebar.classList.contains('active')) {
-                    document.body.style.overflow = 'hidden';
-                } else {
-                    document.body.style.overflow = '';
-                }
-            });
-            
-            // Закрываем меню при клике вне его области
-            document.addEventListener('click', function(event) {
-                if (window.innerWidth <= 500 && 
-                    !sidebar.contains(event.target) && 
-                    !menuToggle.contains(event.target) && 
-                    sidebar.classList.contains('active')) {
-                    sidebar.classList.remove('active');
-                    document.body.style.overflow = '';
-                }
-            });
-            
-            // Проверяем при загрузке и при изменении размера окна
-            checkScreenSize();
-            window.addEventListener('resize', checkScreenSize);
-            
-            // Интерактивность для кнопки "Читать"
-            document.querySelectorAll('.follow-btn').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    if (this.textContent === 'Читать') {
-                        this.textContent = 'Отменить';
-                        this.style.backgroundColor = 'transparent';
-                        this.style.color = 'var(--primary-color)';
-                        this.style.border = '1px solid var(--border-color)';
-                    } else {
-                        this.textContent = 'Читать';
-                        this.style.backgroundColor = '';
-                        this.style.color = '';
-                        this.style.border = '';
-                    }
-                });
-            });
-            
-            // Анимация сердечек в постах
-            document.querySelectorAll('.post-stat').forEach(heart => {
-                heart.addEventListener('click', function() {
-                    const icon = this.querySelector('i');
-                    if (icon.classList.contains('far')) {
-                        icon.classList.remove('far');
-                        icon.classList.add('fas');
-                        icon.style.color = '#f91880';
-                    } else {
-                        icon.classList.remove('fas');
-                        icon.classList.add('far');
-                        icon.style.color = '';
-                    }
-                });
-            });
-        });
-        document.addEventListener('DOMContentLoaded', function() {
-            // Ваш существующий JavaScript код
-            // ... (ваш текущий JavaScript) ...
-
-            // Новая улучшенная функция для удаления Markdown-тегов
-            function removeMarkdownTags(text) {
-                if (!text) return '';
-                
-                // Сохраняем переносы строк
-                text = text.replace(/\n/g, ' [NEWLINE] ');
-                
-                // Удаляем Markdown-теги, сохраняя текст
-                let cleanText = text
-                    // Изображения ![alt](url)
-                    .replace(/!\[(.*?)\]\(.*?\)/g, '$1')
-                    // Ссылки [text](url)
-                    .replace(/\[(.*?)\]\(.*?\)/g, '$1')
-                    // Жирный **text** или __text__
-                    .replace(/\*\*(.*?)\*\*/g, '$1')
-                    .replace(/__(.*?)__/g, '$1')
-                    // Курсив *text* или _text_
-                    .replace(/\*(.*?)\*/g, '$1')
-                    .replace(/_(.*?)_/g, '$1')
-                    // Зачеркивание ~~text~~
-                    .replace(/~~(.*?)~~/g, '$1')
-                    // Код `code` и ```code```
-                    .replace(/`{1,3}(.*?)`{1,3}/g, '$1')
-                    // Заголовки #, ## и т.д.
-                    .replace(/^#{1,6}\s+/gm, '')
-                    // Горизонтальные линии ---, ***
-                    .replace(/^[-*_]{3,}$/gm, '')
-                    // HTML-теги
-                    .replace(/<[^>]*>/g, '');
-                
-                // Восстанавливаем переносы строк
-                cleanText = cleanText.replace(/\[NEWLINE\]/g, '\n');
-                
-                return cleanText.trim();
-            }
-
-            // Применяем функцию к тексту постов
-            document.querySelectorAll('.post-text').forEach(el => {
-                el.textContent = removeMarkdownTags(el.textContent);
-            });
-
-            // Применяем функцию к описанию профиля
-            const bioElement = document.querySelector('.bio');
-            if (bioElement) {
-                bioElement.textContent = removeMarkdownTags(bioElement.textContent);
-            }
-            
-            // Для тестирования можно раскомментировать:
-            // console.log(removeMarkdownTags("**Жирный** и _курсив_ текст с [ссылкой](url)"));
-        });
-    </script>
-    
-</body>
-</html>
+    {% endfor %}
+</div>
+{% endblock %}

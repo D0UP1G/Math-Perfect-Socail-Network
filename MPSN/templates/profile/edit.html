@@ -1,628 +1,203 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Редактирование профиля |</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        a {
-            text-decoration: none;
-            color: #fff;
-        }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        }
+{% extends 'base.html' %}
+{% block title %}Редактировать профиль — Doupig{% endblock %}
 
-        :root {
-            --bg-color: #000000;
-            --text-color: #ffffff;
-            --border-color: #2f3336;
-            --hover-color: #181818;
-            --primary-color: #1d9bf0;
-            --secondary-color: #71767b;
-            --container-color: #16181c;
-        }
+{% block extra_css %}
+.edit-wrap { max-width: 600px; margin: 0 auto; padding: 24px 16px 40px; }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            min-height: 100vh;
-            display: flex;
-            position: relative;
-        }
+.form-group { margin-bottom: 20px; }
+.form-label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px; color: var(--muted); }
+.form-control {
+    width: 100%; background: var(--card);
+    border: 1px solid var(--border); border-radius: 10px;
+    color: var(--text); font-size: 15px; padding: 12px 16px;
+    transition: border-color 0.2s; font-family: inherit;
+}
+.form-control:focus { outline: none; border-color: var(--blue); }
+textarea.form-control { resize: vertical; min-height: 80px; }
 
-        /* Адаптивный сайдбар */
-        .sidebar {
-            width: 275px;
-            padding: 8px 12px;
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid var(--border-color);
-            transition: all 0.3s ease;
-            z-index: 100;
-            background-color: var(--bg-color);
-            overflow-y: auto;
-        }
+/* Image upload areas */
+.img-upload-group { margin-bottom: 20px; }
+.img-preview-banner {
+    width: 100%; height: 160px; border-radius: 12px;
+    background: linear-gradient(135deg, #1a1a2e, #0f3460);
+    background-size: cover; background-position: center;
+    margin-bottom: 10px; border: 2px dashed var(--border);
+    overflow: hidden; position: relative; cursor: pointer;
+    transition: border-color 0.2s;
+}
+.img-preview-banner:hover { border-color: var(--blue); }
+.img-preview-banner img { width: 100%; height: 100%; object-fit: cover; }
 
-        .logo {
-            padding: 12px;
-            margin-bottom: 8px;
-        }
+.img-preview-avatar {
+    width: 100px; height: 100px; border-radius: 50%;
+    background: #333; border: 2px dashed var(--border);
+    overflow: hidden; position: relative; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px; color: var(--muted);
+    transition: border-color 0.2s; margin-bottom: 10px;
+}
+.img-preview-avatar:hover { border-color: var(--blue); }
+.img-preview-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
-        .logo i {
-            font-size: 28px;
-            color: var(--text-color);
-        }
+.upload-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 0.2s;
+    color: #fff; font-size: 22px;
+}
+.img-preview-banner:hover .upload-overlay,
+.img-preview-avatar:hover .upload-overlay { opacity: 1; }
 
-        .nav-item {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            margin: 4px 0;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 20px;
-            font-weight: 500;
-            transition: background-color 0.2s;
-            white-space: nowrap;
-        }
+.file-input-hidden { display: none; }
 
-        .nav-item:hover {
-            background-color: var(--hover-color);
-        }
+.upload-hint { color: var(--muted); font-size: 13px; margin-bottom: 8px; }
 
-        .nav-item i {
-            margin-right: 16px;
-            width: 26px;
-            text-align: center;
-            flex-shrink: 0;
-        }
+.field-error { color: #f85149; font-size: 13px; margin-top: 4px; }
 
-        .nav-item.active {
-            font-weight: 700;
-            background-color: var(--hover-color);
-        }
+.save-btn {
+    background: var(--blue); color: #fff;
+    border: none; border-radius: 50px;
+    padding: 14px; font-size: 16px; font-weight: 700;
+    cursor: pointer; width: 100%; transition: background 0.15s; margin-top: 8px;
+}
+.save-btn:hover { background: #1a8cd8; }
 
-        .tweet-btn {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            padding: 16px;
-            font-size: 17px;
-            font-weight: 700;
-            margin-top: 16px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            width: 100%;
-            text-align: center;
-        }
+.section-divider {
+    border: none; border-top: 1px solid var(--border);
+    margin: 24px 0;
+}
+.section-title { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+{% endblock %}
 
-        .tweet-btn:hover {
-            background-color: #1a8cd8;
-        }
+{% block content %}
+<div class="page-header">
+    <button class="back-btn" onclick="window.history.back()"><i class="fas fa-arrow-left"></i></button>
+    <h1>Редактировать профиль</h1>
+</div>
 
-        .profile-mini {
-            display: flex;
-            align-items: center;
-            margin-top: auto;
-            padding: 12px;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            margin-bottom: 20px;
-        }
+<div class="edit-wrap">
+    <form method="post" enctype="multipart/form-data" id="editForm">
+        {% csrf_token %}
 
-        .profile-mini:hover {
-            background-color: var(--hover-color);
-        }
-
-        .profile-mini img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 12px;
-            flex-shrink: 0;
-        }
-
-        .profile-mini .info {
-            flex-grow: 1;
-            overflow: hidden;
-        }
-
-        .profile-mini .name {
-            font-weight: 700;
-            font-size: 15px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .profile-mini .username {
-            color: var(--secondary-color);
-            font-size: 15px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* Центральный контент */
-        .main-content {
-            margin-left: 275px;
-            width: calc(100% - 275px);
-            min-height: 100vh;
-            transition: all 0.3s ease;
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            justify-content: center;
-        }
-
-        /* Новый контейнер для центрирования */
-        .center-container {
-            width: 100%;
-            max-width: 600px;
-        }
-
-        .header {
-            position: sticky;
-            top: 0;
-            background-color: rgba(0, 0, 0, 0.65);
-            backdrop-filter: blur(12px);
-            z-index: 10;
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-        }
-
-        .back-btn {
-            background: none;
-            border: none;
-            color: var(--text-color);
-            font-size: 20px;
-            margin-right: 20px;
-            cursor: pointer;
-        }
-
-        .header h1 {
-            font-size: 20px;
-            font-weight: 800;
-        }
-
-        /* Стили для формы редактирования */
-        .edit-form {
-            padding: 16px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 700;
-            color: var(--text-color);
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 12px;
-            background-color: var(--container-color);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            color: var(--text-color);
-            font-size: 15px;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-
-        .form-textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        .save-btn {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            padding: 12px 24px;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            width: 100%;
-        }
-
-        .save-btn:hover {
-            background-color: #1a8cd8;
-        }
-
-        .banner-preview {
-            width: 100%;
-            height: 200px;
-            background-color: #333;
-            background-size: cover;
-            background-position: center;
-            margin-bottom: 20px;
-            border-radius: 16px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-        }
-
-        .avatar-preview {
-            width: 133px;
-            height: 133px;
-            border-radius: 50%;
-            border: 4px solid var(--bg-color);
-            background-color: #333;
-            margin-top: -65px;
-            margin-bottom: 16px;
-            object-fit: cover;
-        }
-
-        .avatar-upload {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .file-input-label {
-            background-color: var(--container-color);
-            color: var(--text-color);
-            padding: 8px 16px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 700;
-            margin-top: 10px;
-            border: 1px solid var(--border-color);
-            transition: background-color 0.2s;
-        }
-
-        .file-input-label:hover {
-            background-color: var(--hover-color);
-        }
-
-        .file-input {
-            display: none;
-        }
-
-        /* Стили для поля даты */
-        .date-input {
-            background-color: var(--container-color);
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 12px;
-            font-size: 15px;
-            width: 100%;
-        }
-
-        /* Правый сайдбар */
-        .right-sidebar {
-            width: 350px;
-            padding: 16px;
-            position: fixed;
-            right: 0;
-            height: 100vh;
-            overflow-y: auto;
-        }
-
-        /* Кнопка меню для мобильных */
-        .menu-toggle {
-            display: none;
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            z-index: 1000;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            font-size: 20px;
-            cursor: pointer;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Медиазапросы для адаптивности */
-        @media (max-width: 1280px) {
-            .sidebar {
-                width: 88px;
-                align-items: center;
-                padding: 8px;
-            }
-            
-            .nav-item {
-                width: 50px;
-                height: 50px;
-                padding: 0;
-                justify-content: center;
-            }
-            
-            .nav-item span {
-                display: none;
-            }
-            
-            .nav-item i {
-                margin-right: 0;
-                font-size: 24px;
-            }
-            
-            .tweet-btn {
-                width: 50px;
-                height: 50px;
-                padding: 0;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-            
-            .tweet-btn span {
-                display: none;
-            }
-            
-            .profile-mini {
-                width: 50px;
-                height: 50px;
-                padding: 0;
-                justify-content: center;
-            }
-            
-            .profile-mini .info {
-                display: none;
-            }
-            
-            .profile-mini img {
-                margin-right: 0;
-            }
-            
-            .main-content {
-                margin-left: 88px;
-                width: calc(100% - 88px);
-            }
-        }
-
-        @media (max-width: 1000px) {
-            .right-sidebar {
-                display: none;
-            }
-        }
-
-        @media (max-width: 500px) {
-            .sidebar {
-                transform: translateX(-100%);
-                width: 275px;
-            }
-            
-            .sidebar.active {
-                transform: translateX(0);
-            }
-            
-            .main-content {
-                margin-left: 0;
-                width: 100%;
-            }
-            
-            .menu-toggle {
-                display: flex;
-            }
-        }
-    </style>
-</head>
-<body>
-    <button class="menu-toggle" id="menuToggle">
-        <i class="fas fa-bars"></i>
-    </button>
-
-    <!-- Левый сайдбар -->
-    <div class="sidebar" id="sidebar">
-        <div class="logo">
-            <i class="fab fa-x-twitter"></i>
-        </div>
-        <a href="{% url 'misc:home' %}">
-            <div class="nav-item">
-                <i class="fas fa-home"></i>
-                <span>Главная</span>
+        <!-- Banner -->
+        <div class="img-upload-group">
+            <div class="form-label">Баннер профиля</div>
+            <div class="img-preview-banner" id="bannerPreview" onclick="document.getElementById('bannerFileInput').click()">
+                {% if request.user.banner %}
+                <img src="{{ request.user.banner.url }}" id="bannerImg" alt="">
+                {% elif request.user.banner_url %}
+                <img src="{{ request.user.banner_url }}" id="bannerImg" alt="">
+                {% else %}
+                <img id="bannerImg" alt="" style="display:none">
+                {% endif %}
+                <div class="upload-overlay"><i class="fas fa-camera"></i></div>
             </div>
-        </a>
-        <a href="{% url 'misc:leaderboard' %}">
-            <div class="nav-item">
-                <i class="fas fa-trophy"></i>
-                <span>Лидерборд</span>
-            </div>
-        </a>
-        <a href="{% url 'user:profile' request.user.username %}">
-            <div class="nav-item">
-                <i class="fas fa-user"></i>
-                <span>Профиль</span>
-            </div>
-        </a>
-        
-        <a href="{% url 'posts:create' %}">
-            <button class="tweet-btn">
-                <span>Опубликовать</span>
-            </button>
-        </a>
-        
-        <div class="profile-mini">
-            <div class="info">
-                <div class="name">{{ user.first_name }} {{ user.last_name }}</div>
-                <a href="{% url 'user:logout' %}"><div class="username">Выход</div></a>
+            <input type="file" name="banner" id="bannerFileInput" class="file-input-hidden" accept="image/*">
+            <div class="upload-hint">Нажмите на баннер чтобы загрузить изображение</div>
+            <div class="form-group">
+                <label class="form-label">Или укажите URL баннера</label>
+                {{ form.banner_url }}
             </div>
         </div>
-    </div>
 
-    <!-- Основной контент -->
-    <div class="main-content" id="mainContent">
-        <div class="center-container">
-            <div class="header">
-                <button class="back-btn" onclick="window.history.back()">
-                    <i class="fas fa-arrow-left"></i>
-                </button>
-                <h1>Редактировать профиль</h1>
+        <hr class="section-divider">
+
+        <!-- Avatar -->
+        <div class="img-upload-group">
+            <div class="form-label">Аватар</div>
+            <div class="img-preview-avatar" id="avatarPreview" onclick="document.getElementById('avatarFileInput').click()">
+                {% if request.user.avatar %}
+                <img src="{{ request.user.avatar.url }}" id="avatarImg" alt="">
+                {% else %}
+                <i class="fas fa-user" id="avatarIcon"></i>
+                <img id="avatarImg" alt="" style="display:none">
+                {% endif %}
+                <div class="upload-overlay"><i class="fas fa-camera" style="font-size:18px"></i></div>
             </div>
-            
-            <div class="edit-form">
-                <form method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    
-                    <!-- Баннер профиля -->
-                    <div class="form-group">
-                        <label for="id_banner_url">Баннер профиля (URL)</label>
-                        <div class="banner-preview" id="bannerPreview" style="background-image: url('{{ form.banner_url.value|default_if_none:"" }}')"></div>
-                        {{ form.banner_url }}
-                    </div>                    
-                    <!-- Основные поля формы -->
-                    <div class="form-group">
-                        <label for="id_username">Имя пользователя</label>
-                        {{ form.username }}
-                        {% if form.username.errors %}
-                            <div class="error">{{ form.username.errors }}</div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="id_first_name">Имя</label>
-                        {{ form.first_name }}
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="id_last_name">Фамилия</label>
-                        {{ form.last_name }}
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="id_email">Email</label>
-                        {{ form.email }}
-                        {% if form.email.errors %}
-                            <div class="error">{{ form.email.errors }}</div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="id_descriptions">Описание профиля</label>
-                        {{ form.descriptions }}
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="id_birth_date">Дата рождения</label>
-                        {{ form.birth_date }}
-                    </div>
-                    
-                    <button type="submit" class="save-btn">Сохранить изменения</button>
-                </form>
-            </div>
+            <input type="file" name="avatar" id="avatarFileInput" class="file-input-hidden" accept="image/*">
+            <div class="upload-hint">Нажмите на аватар чтобы загрузить изображение</div>
         </div>
-    </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const menuToggle = document.getElementById('menuToggle');
-            const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('mainContent');
-            
-            // Проверяем ширину экрана и показываем/скрываем кнопку меню
-            function checkScreenSize() {
-                if (window.innerWidth <= 500) {
-                    menuToggle.style.display = 'flex';
-                    sidebar.classList.remove('active');
-                } else if (window.innerWidth <= 1280) {
-                    menuToggle.style.display = 'none';
-                    sidebar.style.width = '88px';
-                    sidebar.style.padding = '8px';
-                    mainContent.style.marginLeft = '88px';
-                    mainContent.style.width = 'calc(100% - 88px)';
-                } else {
-                    menuToggle.style.display = 'none';
-                    sidebar.style.width = '275px';
-                    sidebar.style.padding = '8px 12px';
-                    mainContent.style.marginLeft = '275px';
-                    mainContent.style.width = 'calc(100% - 275px)';
-                }
-            }
-            
-            // Обработчик клика по кнопке меню
-            menuToggle.addEventListener('click', function() {
-                sidebar.classList.toggle('active');
-                
-                // Блокируем прокрутку основного контента при открытом меню
-                if (sidebar.classList.contains('active')) {
-                    document.body.style.overflow = 'hidden';
-                } else {
-                    document.body.style.overflow = '';
-                }
-            });
-            
-            // Закрываем меню при клике вне его области
-            document.addEventListener('click', function(event) {
-                if (window.innerWidth <= 500 && 
-                    !sidebar.contains(event.target) && 
-                    !menuToggle.contains(event.target) && 
-                    sidebar.classList.contains('active')) {
-                    sidebar.classList.remove('active');
-                    document.body.style.overflow = '';
-                }
-            });
-            
-            // Обновление превью баннера при изменении URL
-            const bannerUrlInput = document.getElementById('id_banner_url');
-            const bannerPreview = document.getElementById('bannerPreview');
-            
-            if (bannerUrlInput && bannerPreview) {
-                bannerUrlInput.addEventListener('input', function() {
-                    if (this.value) {
-                        bannerPreview.style.backgroundImage = `url('${this.value}')`;
-                    } else {
-                        bannerPreview.style.backgroundImage = '';
-                    }
-                });
-            }
-            
-            // Обновление превью аватара при выборе файла
-            const avatarInput = document.getElementById('id_avatar');
-            const avatarPreview = document.getElementById('avatarPreview');
-            
-            if (avatarInput && avatarPreview) {
-                avatarInput.addEventListener('change', function(e) {
-                    const file = e.target.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = function(event) {
-                            avatarPreview.src = event.target.result;
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                });
-            }
-            
-            // Добавляем классы form-control ко всем полям формы
-            const formInputs = document.querySelectorAll('input:not([type="file"]), textarea, select');
-            formInputs.forEach(input => {
-                input.classList.add('form-control');
-            });
-            
-            // Особый стиль для поля даты
-            const dateInput = document.getElementById('id_birth_date');
-            if (dateInput) {
-                dateInput.classList.add('date-input');
-            }
-        });
-    </script>
-</body>
-</html>
+        <hr class="section-divider">
+
+        <div class="section-title">Основная информация</div>
+
+        <div class="form-group">
+            <label class="form-label">Имя пользователя</label>
+            {{ form.username }}
+            {% if form.username.errors %}<div class="field-error">{{ form.username.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="form-group">
+            <label class="form-label">Имя</label>
+            {{ form.first_name }}
+        </div>
+        <div class="form-group">
+            <label class="form-label">Фамилия</label>
+            {{ form.last_name }}
+        </div>
+        <div class="form-group">
+            <label class="form-label">Email</label>
+            {{ form.email }}
+            {% if form.email.errors %}<div class="field-error">{{ form.email.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="form-group">
+            <label class="form-label">О себе</label>
+            {{ form.descriptions }}
+        </div>
+        <div class="form-group">
+            <label class="form-label">Дата рождения</label>
+            {{ form.birth_date }}
+        </div>
+
+        <button type="submit" class="save-btn">Сохранить изменения</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+// Add form-control class to all inputs
+document.querySelectorAll('input:not([type=file]), textarea, select').forEach(el => {
+    el.classList.add('form-control');
+});
+
+// Banner file preview
+document.getElementById('bannerFileInput').addEventListener('change', function() {
+    const file = this.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+        const img = document.getElementById('bannerImg');
+        img.src = e.target.result;
+        img.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+});
+
+// Banner URL preview
+const bannerUrlInput = document.querySelector('[name=banner_url]');
+if (bannerUrlInput) {
+    bannerUrlInput.addEventListener('input', function() {
+        const img = document.getElementById('bannerImg');
+        if (this.value) {
+            img.src = this.value;
+            img.style.display = 'block';
+        }
+    });
+}
+
+// Avatar file preview
+document.getElementById('avatarFileInput').addEventListener('change', function() {
+    const file = this.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+        const img = document.getElementById('avatarImg');
+        const icon = document.getElementById('avatarIcon');
+        img.src = e.target.result;
+        img.style.display = 'block';
+        if (icon) icon.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+});
+{% endblock %}
